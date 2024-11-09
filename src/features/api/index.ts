@@ -1,5 +1,5 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
-import {InfoResponseBody, LoginRequestBody} from "@/features/api/types";
+import {BaseType, LoginRequestBody} from "@/features/api/types";
 
 const baseQuery = fetchBaseQuery({
     baseUrl: 'https://localhost:5001/api',
@@ -18,10 +18,10 @@ export const api = createApi({
                 body: credentials,
             }),
         }),
-        getUser: builder.query<InfoResponseBody, void>({
-            query: () => '/Users/manage/info',
-        }),
+        getRoles: builder.query<BaseType[], void>({
+            query: () => '/Identities/GetRoles',
+        })
     }),
 });
 
-export const {useLoginMutation, useGetUserQuery} = api;
+export const {useLoginMutation, useGetRolesQuery} = api;
