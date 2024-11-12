@@ -4,7 +4,8 @@ import localFont from "next/font/local";
 import "./globals.css";
 import {ReactNode} from "react";
 import {Provider} from "react-redux";
-import {store} from "@/store";
+import {persistor, store} from "@/store";
+import {PersistGate} from "redux-persist/integration/react";
 
 const geistSans = localFont({
     src: "./fonts/GeistVF.woff",
@@ -24,14 +25,19 @@ export default function RootLayout({
     children: ReactNode;
 }>) {
     return (
+        <html lang="es">
+        <body
+            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        >
         <Provider store={store}>
-            <html lang="es">
-            <body
-                className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-            >
-            {children}
-            </body>
-            </html>
+            <PersistGate persistor={persistor}>
+
+                {children}
+
+            </PersistGate>
         </Provider>
-    );
+        </body>
+        </html>
+    )
+        ;
 }

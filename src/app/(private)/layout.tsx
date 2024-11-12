@@ -20,12 +20,11 @@ export default function LayoutDashboard({
     children: ReactNode;
 }>) {
 
-    const {rol} = useAppSelector(state => state.auth)
+    const {isAdministrator} = useAppSelector(state => state.auth)
 
     return (
-
         <SidebarProvider>
-            {rol && rol.name === "Administrator" && (
+            {isAdministrator && (
                 <SidenavAdmin/>
             )}
             <SidebarInset>

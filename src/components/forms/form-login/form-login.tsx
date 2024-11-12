@@ -56,7 +56,8 @@ const FormLogin = () => {
                     render={({field}) => (
                         <FormItem>
                             <FormControl>
-                                <Input placeholder="Ingresa tu correo electrónico" {...field} className="w-full"/>
+                                <Input placeholder="Ingresa tu correo electrónico" {...field} className="w-full"
+                                       type="text"/>
                             </FormControl>
                             <FormMessage/>
                         </FormItem>
@@ -68,7 +69,8 @@ const FormLogin = () => {
                     render={({field}) => (
                         <FormItem>
                             <FormControl>
-                                <Input placeholder="Ingresa tu contraseña" {...field} className="w-full"/>
+                                <Input placeholder="Ingresa tu contraseña" {...field} className="w-full"
+                                       type="password"/>
                             </FormControl>
                             <FormMessage/>
                         </FormItem>

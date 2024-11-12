@@ -11,7 +11,7 @@ import {
     Map,
     PieChart,
     Settings2,
-    SquareTerminal,
+    Users
 } from "lucide-react"
 
 import {NavMain} from "@/components/dashboards/admin//nav-main"
@@ -46,22 +46,14 @@ const data = {
     ],
     navMain: [
         {
-            title: "Playground",
+            title: "Empleados",
             url: "#",
-            icon: SquareTerminal,
+            icon: Users,
             isActive: true,
             items: [
                 {
-                    title: "History",
-                    url: "#",
-                },
-                {
-                    title: "Starred",
-                    url: "#",
-                },
-                {
-                    title: "Settings",
-                    url: "#",
+                    title: "Administrar",
+                    url: "/dashboard/empleados",
                 },
             ],
         },

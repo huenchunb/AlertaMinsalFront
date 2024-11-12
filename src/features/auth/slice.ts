@@ -1,14 +1,15 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-import {BaseType} from "@/features/api/types";
 
 export interface AuthState {
     isAuthenticated: boolean;
-    rol: BaseType | undefined;
+    roles: string[];
+    isAdministrator: boolean;
 }
 
 const initialState: AuthState = {
     isAuthenticated: false,
-    rol: undefined
+    roles: [],
+    isAdministrator: false,
 };
 
 const authSlice = createSlice({
@@ -18,8 +19,9 @@ const authSlice = createSlice({
         setAuthenticated: (state, action: PayloadAction<boolean>) => {
             state.isAuthenticated = action.payload;
         },
-        setRol: (state, action: PayloadAction<BaseType>) => {
-            state.rol = action.payload;
+        setRol: (state, action: PayloadAction<string[]>) => {
+            state.roles = action.payload;
+            state.isAdministrator = action.payload.includes('Administrator');
         }
     },
 });
