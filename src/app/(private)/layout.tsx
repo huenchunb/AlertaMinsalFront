@@ -19,7 +19,6 @@ export default function LayoutDashboard({
                                         }: Readonly<{
     children: ReactNode;
 }>) {
-
     const {isAdministrator} = useAppSelector(state => state.auth)
 
     return (

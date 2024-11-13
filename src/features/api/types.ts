@@ -12,7 +12,7 @@ export interface LoginRequestBody {
     password: string
 }
 
-export interface BaseType {
+export interface LookupDto {
     id: string,
     name: string
 }
@@ -33,7 +33,7 @@ export interface EmpleadoDto {
     establecimiento: string;
 }
 
-export interface CreateEmpleadoRequestBody{
+export interface CreateEmpleadoRequestBody {
     rut: string;
     firstName: string;
     lastName: string;
@@ -46,4 +46,11 @@ export interface CreateEmpleadoRequestBody{
     estamentoId: number;
     establecimientoId: number;
     imageUrl: string;
+}
+
+export interface GetDefaultsResponseDto {
+    mutualidades: LookupDto[];
+    estamentos: LookupDto[];
+    establecimientos: LookupDto[];
+    comunas: LookupDto[];
 }

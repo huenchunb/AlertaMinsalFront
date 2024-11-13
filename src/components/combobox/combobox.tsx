@@ -6,6 +6,7 @@ import {cn} from "@/lib/utils";
 import {Check, ChevronsUpDown} from "lucide-react";
 import {Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList} from "@/components/ui/command";
 import {Control, useController} from "react-hook-form";
+import {LookupDto} from "@/features/api/types";
 
 export interface SelectItems {
     label: string,
@@ -16,7 +17,7 @@ interface ComboBoxProps {
     control: Control<never>;
     name: never;
     label: string;
-    data: SelectItems[]
+    data: LookupDto[]
 }
 
 const ComboBox: React.FC<ComboBoxProps> = ({control, name, label, data}) => {
@@ -37,7 +38,7 @@ const ComboBox: React.FC<ComboBoxProps> = ({control, name, label, data}) => {
                             )}
                         >
                             {field.value
-                                ? data.find((item) => item.value === field.value)?.label
+                                ? data.find((item) => item.id === field.value)?.name
                                 : "Selecciona"}
                             <ChevronsUpDown className="opacity-50"/>
                         </Button>
@@ -51,15 +52,15 @@ const ComboBox: React.FC<ComboBoxProps> = ({control, name, label, data}) => {
                             <CommandGroup>
                                 {data.map((item) => (
                                     <CommandItem
-                                        value={item.label}
-                                        key={item.value}
-                                        onSelect={() => field.onChange(item.value)}
+                                        value={item.name}
+                                        key={item.id}
+                                        onSelect={() => field.onChange(item.id)}
                                     >
-                                        {item.label}
+                                        {item.name}
                                         <Check
                                             className={cn(
                                                 "ml-auto",
-                                                item.value === field.value ? "opacity-100" : "opacity-0"
+                                                item.id === field.value ? "opacity-100" : "opacity-0"
                                             )}
                                         />
                                     </CommandItem>

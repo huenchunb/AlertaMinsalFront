@@ -16,15 +16,13 @@ const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        setAuthenticated: (state, action: PayloadAction<boolean>) => {
-            state.isAuthenticated = action.payload;
-        },
         setRol: (state, action: PayloadAction<string[]>) => {
             state.roles = action.payload;
             state.isAdministrator = action.payload.includes('Administrator');
+            state.isAuthenticated = true;
         }
     },
 });
 
-export const {setAuthenticated, setRol} = authSlice.actions;
+export const {setRol} = authSlice.actions;
 export default authSlice.reducer;
