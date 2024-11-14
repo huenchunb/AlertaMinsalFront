@@ -6,7 +6,7 @@ import {cn} from "@/lib/utils";
 import {Check, ChevronsUpDown} from "lucide-react";
 import {Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList} from "@/components/ui/command";
 import {Control, useController} from "react-hook-form";
-import {LookupDto} from "@/features/api/types";
+import {LookupDto, RoleDto} from "@/features/api/types";
 
 export interface SelectItems {
     label: string,
@@ -17,7 +17,7 @@ interface ComboBoxProps {
     control: Control<never>;
     name: never;
     label: string;
-    data: LookupDto[]
+    data: LookupDto[] | RoleDto[];
 }
 
 const ComboBox: React.FC<ComboBoxProps> = ({control, name, label, data}) => {

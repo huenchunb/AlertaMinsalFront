@@ -13,6 +13,11 @@ export interface LoginRequestBody {
 }
 
 export interface LookupDto {
+    id: number,
+    name: string
+}
+
+export interface RoleDto {
     id: string,
     name: string
 }
@@ -46,6 +51,13 @@ export interface CreateEmpleadoRequestBody {
     estamentoId: number;
     establecimientoId: number;
     imageUrl: string;
+    role: string;
+}
+
+export interface TipoAgresionCategoriaDto {
+    id: number;
+    name: string;
+    tipoAgresiones: LookupDto[];
 }
 
 export interface GetDefaultsResponseDto {
@@ -53,4 +65,8 @@ export interface GetDefaultsResponseDto {
     estamentos: LookupDto[];
     establecimientos: LookupDto[];
     comunas: LookupDto[];
+    tipoAgresores: LookupDto[];
+    tipoAgresiones: LookupDto[];
+    tipoAgresionesCategorias: TipoAgresionCategoriaDto[];
+    roles: RoleDto[];
 }
