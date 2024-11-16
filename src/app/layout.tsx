@@ -6,6 +6,7 @@ import {ReactNode} from "react";
 import {Provider} from "react-redux";
 import {persistor, store} from "@/store";
 import {PersistGate} from "redux-persist/integration/react";
+import {Toaster} from "@/components/ui/toaster";
 
 const geistSans = localFont({
     src: "./fonts/GeistVF.woff",
@@ -31,9 +32,8 @@ export default function RootLayout({
         >
         <Provider store={store}>
             <PersistGate persistor={persistor}>
-
                 {children}
-
+                <Toaster />
             </PersistGate>
         </Provider>
         </body>

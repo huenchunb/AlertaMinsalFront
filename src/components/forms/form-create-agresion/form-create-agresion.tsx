@@ -1,6 +1,6 @@
 "use client";
 
-import {useForm} from "react-hook-form";
+import {useFieldArray, useForm} from "react-hook-form";
 import {z} from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
@@ -9,7 +9,7 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/c
 import React, {useEffect} from "react";
 import {EmpleadoDefaultDto, LookupDto} from "@/features/api/types";
 import {Alert} from "@/components/ui/alert";
-import {CalendarIcon, Info} from "lucide-react"
+import {CalendarIcon, Info, Trash2, UserRoundPlus} from "lucide-react"
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {Button} from "@/components/ui/button";
@@ -18,15 +18,43 @@ import {Calendar} from "@/components/ui/calendar";
 import {format} from "date-fns";
 import {es} from "date-fns/locale"
 import {Checkbox} from "@/components/ui/checkbox";
+import {Input} from "@/components/ui/input";
+import {InputRut} from "@/components/ui/input-rut";
+import {toast} from "@/hooks/use-toast";
 
 export const formCreateAgresionSchema = z.object({
     fechaAgresion: z.date({required_error: "La fecha de la agresión es requerida"}),
-    establecimientoId: z.string({message: "El establecimiento es requerido"}),
-    empleadoId: z.string({message: "Seleccione un empleado"}),
-    tipoAgresionId: z.string({required_error: "Selecciona un tipo de agresión"}),
-    categoriasAgresionesId: z.array(z.string()).refine((value) => value.some((item) => item), {
-        message: "Debes seleccionar al menos un tipo de agresión",
-    })
+    establecimientoId: z.number({required_error: "El establecimiento es requerido"})
+        .int().min(1, {message: "Debes seleccionar un establecimiento"}),
+    empleadoId: z.number({required_error: "El empleado es requerido"})
+        .int().min(1, {message: "Debes seleccionar un empleado"}),
+    tipoAgresionId: z.number({required_error: "El tipo de agresión es requerido"})
+        .int().min(1, {message: "Debes seleccionar un tipo de agresión"}),
+    categoriasAgresionesId: z.array(z.number())
+        .refine((value) => value.length > 0, {
+            message: "Debes seleccionar al menos una categoría del tipo de agresión",
+        }),
+    agresores: z.array(
+        z.object({
+            tipoAgresorId: z.string({required_error: "Debes seleccionar un tipo de agresor"}),
+            name: z.string({required_error: "Debes ingresar un nombre"}).min(1, "El nombre es requerido"),
+            lastName: z.string({required_error: "Debes ingresar un apellido"}).min(1, "El apellido es requerido"),
+            rut: z.string({required_error: "Debes ingresar un rut"}).min(1, "El RUT es requerido"),
+            email: z.string({required_error: "Debes ingresar un correo electrónico"}).email("Correo inválido"),
+            phoneNumber: z.string({required_error: "Debes ingresar un número de teléfono"}),
+            address: z.string({required_error: "Debes ingresar una dirección"}),
+            comunaId: z.string({required_error: "Debes seleccionar una comuna"})
+        })
+    ).min(1, {message: "Debe haber al menos un agresor"}),
+    testigos: z.array(
+        z.object({
+            name: z.string({required_error: "Debes ingresar un nombre"}).min(1, "El nombre es requerido"),
+            lastName: z.string({required_error: "Debes ingresar un apellido"}).min(1, "El apellido es requerido"),
+            rut: z.string({required_error: "Debes ingresar un rut"}).min(1, "El RUT es requerido"),
+            email: z.string({required_error: "Debes ingresar un correo electrónico"}).email("Correo inválido"),
+            phoneNumber: z.string({required_error: "Debes ingresar un número de teléfono"}),
+        })
+    ).min(1, {message: "Debe haber al menos un testigo"})
 });
 
 const FormCreateAgresion = () => {
@@ -39,19 +67,31 @@ const FormCreateAgresion = () => {
     const [empleados, setEmpleados] = React.useState<EmpleadoDefaultDto[]>([]);
     const [categorias, setCategorias] = React.useState<LookupDto[]>([]);
 
-
     const form = useForm<z.infer<typeof formCreateAgresionSchema>>({
         resolver: zodResolver(formCreateAgresionSchema),
         defaultValues: {
             fechaAgresion: new Date(),
-            establecimientoId: "0",
-            empleadoId: "0",
-            tipoAgresionId: "0",
-            categoriasAgresionesId: []
+            establecimientoId: 0,
+            empleadoId: 0,
+            tipoAgresionId: 0,
+            categoriasAgresionesId: [],
+            agresores: [],
+            testigos: []
         }
     });
 
-    const {handleSubmit, watch, setValue} = form;
+    const {handleSubmit, watch, control, setValue, formState, reset} = form;
+    const {errors} = formState
+
+    const {fields, append, remove} = useFieldArray({
+        control,
+        name: "agresores",
+    });
+
+    const {fields: fieldsTestigos, append: appendTestigo, remove: removeTestigo} = useFieldArray({
+        control,
+        name: "testigos",
+    });
 
     const establecimientoId = Number(watch("establecimientoId"));
     const tipoAgresionId = Number(watch("tipoAgresionId"));
@@ -75,8 +115,17 @@ const FormCreateAgresion = () => {
     }, [data, establecimientoId, tipoAgresionId]);
 
 
-    const onSubmit = (values: z.infer<typeof formCreateAgresionSchema>) => {
-        console.log(values);
+    const onSubmit = (data: z.infer<typeof formCreateAgresionSchema>) => {
+        toast({
+            title: "You submitted the following values:",
+            description: (
+                <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+                    <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+                </pre>
+            ),
+        });
+
+        reset();
     };
 
     return (
@@ -86,12 +135,14 @@ const FormCreateAgresion = () => {
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <div className="grid grid-cols-2 gap-4 items-center">
                             <FormField
-                                control={form.control}
+                                control={control}
                                 name="establecimientoId"
                                 render={({field}) => (
                                     <FormItem className="w-full">
                                         <FormLabel>Establecimiento de salud</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <Select
+                                            onValueChange={(value) => field.onChange(Number(value))}
+                                            defaultValue={field.value ? field.value.toString() : ""}>
                                             <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Selecciona un establecimiento"/>
@@ -101,7 +152,7 @@ const FormCreateAgresion = () => {
                                                 {data.establecimientos.map((establecimiento) => (
                                                     <SelectItem key={establecimiento.id}
                                                                 value={establecimiento.id.toString()}>
-                                                        ({establecimiento.id}) {establecimiento.name}
+                                                        {establecimiento.name}
                                                     </SelectItem>
                                                 ))}
                                             </SelectContent>
@@ -117,13 +168,13 @@ const FormCreateAgresion = () => {
                                 <>
                                     {empleados.length != 0 ? (
                                         <FormField
-                                            control={form.control}
+                                            control={control}
                                             name="empleadoId"
                                             render={({field}) => (
                                                 <FormItem className="w-full">
                                                     <FormLabel>Empleados del establecimiento</FormLabel>
-                                                    <Select onValueChange={field.onChange}
-                                                            defaultValue={field.value}>
+                                                    <Select onValueChange={(value) => field.onChange(Number(value))}
+                                                            defaultValue={field.value ? field.value.toString() : ""}>
                                                         <FormControl>
                                                             <SelectTrigger>
                                                                 <SelectValue placeholder="Selecciona un empleado"/>
@@ -169,7 +220,7 @@ const FormCreateAgresion = () => {
                                         <div className="flex flex-col gap-4">
                                             <div>
                                                 <FormField
-                                                    control={form.control}
+                                                    control={control}
                                                     name="fechaAgresion"
                                                     render={({field}) => (
                                                         <FormItem className="flex flex-col">
@@ -216,17 +267,18 @@ const FormCreateAgresion = () => {
                                             </div>
                                             <div>
                                                 <FormField
-                                                    control={form.control}
+                                                    control={control}
                                                     name="tipoAgresionId"
                                                     render={({field}) => (
                                                         <FormItem className="w-full">
                                                             <FormLabel>Tipo de agresion</FormLabel>
-                                                            <Select onValueChange={field.onChange}
-                                                                    defaultValue={field.value}>
+                                                            <Select
+                                                                onValueChange={(value) => field.onChange(Number(value))}
+                                                                defaultValue={field.value ? field.value.toString() : ""}>
                                                                 <FormControl>
                                                                     <SelectTrigger>
                                                                         <SelectValue
-                                                                            placeholder="Selecciona un establecimiento"/>
+                                                                            placeholder="Selecciona un tipo de agresión"/>
                                                                     </SelectTrigger>
                                                                 </FormControl>
                                                                 <SelectContent>
@@ -249,7 +301,7 @@ const FormCreateAgresion = () => {
                                         </div>
                                         <div>
                                             <FormField
-                                                control={form.control}
+                                                control={control}
                                                 name="categoriasAgresionesId"
                                                 render={() => (
                                                     <FormItem>
@@ -263,7 +315,7 @@ const FormCreateAgresion = () => {
                                                         {categorias.map((item) => (
                                                             <FormField
                                                                 key={item.id}
-                                                                control={form.control}
+                                                                control={control}
                                                                 name="categoriasAgresionesId"
                                                                 render={({field}) => (
                                                                     <FormItem
@@ -271,12 +323,13 @@ const FormCreateAgresion = () => {
                                                                         className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
                                                                         <FormControl>
                                                                             <Checkbox
-                                                                                checked={field.value?.includes(item.id.toString())}
+                                                                                checked={watch("categoriasAgresionesId").includes(item.id)} // Use watch to keep track of the field value
                                                                                 onCheckedChange={(checked) => {
+                                                                                    const currentValues = watch("categoriasAgresionesId"); // Watch the current values
                                                                                     const newValue = checked
-                                                                                        ? [...field.value, item.id.toString()]
-                                                                                        : field.value.filter((value) => value !== item.id.toString());
-                                                                                    field.onChange(newValue);
+                                                                                        ? [...currentValues, item.id] // Add the item if checked
+                                                                                        : currentValues.filter((value) => value !== item.id); // Remove the item if unchecked
+                                                                                    setValue("categoriasAgresionesId", newValue); // Set the updated values
                                                                                 }}
                                                                             />
                                                                         </FormControl>
@@ -299,6 +352,361 @@ const FormCreateAgresion = () => {
                                 </CardContent>
                             </Card>
                         </div>
+                        <div className="my-4">
+                            <Card>
+                                <CardHeader className="pb-0">
+                                    <CardTitle>Agresores</CardTitle>
+                                    <CardDescription>Ingresa la información sobre el o los agresores involucrados en el
+                                        incidente. Es importante ser preciso y detallado al completar está información,
+                                        ya que facilitará un manejo adecuado de la denuncia, y en caso de ser necesario
+                                        ayudará a las autoridades a tomar las medidas necesarias.</CardDescription>
+                                    {errors.agresores && (
+                                        <Alert variant="destructive" className="mt-2">
+                                            {errors.agresores.message}
+                                        </Alert>
+                                    )}
+                                </CardHeader>
+                                <CardContent>
+                                    {fields.map((field, index) => (
+                                        <Card key={field.id} className="my-4">
+                                            <CardHeader>
+                                                <CardTitle>Agresor {index + 1}</CardTitle>
+                                            </CardHeader>
+                                            <CardContent className="flex flex-col gap-2">
+                                                <div className="flex justify-between gap-4">
+                                                    <FormField
+                                                        control={control}
+                                                        name={`agresores.${index}.rut`}
+                                                        render={({field}) => (
+                                                            <FormItem
+                                                                className="w-full">
+                                                                <FormLabel>RUT</FormLabel>
+                                                                <FormControl>
+                                                                    <InputRut
+                                                                        placeholder="RUT del agresor"
+                                                                        {...field}
+                                                                        className="w-full"
+                                                                    />
+                                                                </FormControl>
+                                                                <FormMessage/>
+                                                                <FormDescription>
+                                                                    Ingresa el RUT sin puntos ni guiones.
+                                                                </FormDescription>
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                    <FormField
+                                                        control={control}
+                                                        name={`agresores.${index}.name`}
+                                                        render={({field}) => (
+                                                            <FormItem
+                                                                className="w-full">
+                                                                <FormLabel>Nombre</FormLabel>
+                                                                <FormControl>
+                                                                    <Input
+                                                                        placeholder="Nombre del agresor"
+                                                                        {...field}
+                                                                        className="w-full"
+                                                                    />
+                                                                </FormControl>
+                                                                <FormMessage/>
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                    <FormField
+                                                        control={control}
+                                                        name={`agresores.${index}.lastName`}
+                                                        render={({field}) => (
+                                                            <FormItem
+                                                                className="w-full">
+                                                                <FormLabel>Apellido</FormLabel>
+                                                                <FormControl>
+                                                                    <Input
+                                                                        placeholder="Apellido del agresor"
+                                                                        {...field}
+                                                                        className="w-full"
+                                                                    />
+                                                                </FormControl>
+                                                                <FormMessage/>
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                </div>
+                                                <div className="flex justify-between gap-4">
+                                                    <FormField
+                                                        control={control}
+                                                        name={`agresores.${index}.email`}
+                                                        render={({field}) => (
+                                                            <FormItem
+                                                                className="w-full">
+                                                                <FormLabel>Email</FormLabel>
+                                                                <FormControl>
+                                                                    <Input
+                                                                        placeholder="Email del agresor"
+                                                                        {...field}
+                                                                        className="w-full"
+                                                                    />
+                                                                </FormControl>
+                                                                <FormMessage/>
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                    <FormField
+                                                        control={control}
+                                                        name={`agresores.${index}.phoneNumber`}
+                                                        render={({field}) => (
+                                                            <FormItem
+                                                                className="w-full">
+                                                                <FormLabel>Teléfono</FormLabel>
+                                                                <FormControl>
+                                                                    <Input
+                                                                        placeholder="Número de teléfono"
+                                                                        {...field}
+                                                                        className="w-full"
+                                                                        type="text"
+                                                                    />
+                                                                </FormControl>
+                                                                <FormMessage/>
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                </div>
+                                                <div className="flex justify-between gap-4">
+                                                    <FormField
+                                                        control={control}
+                                                        name={`agresores.${index}.address`}
+                                                        render={({field}) => (
+                                                            <FormItem
+                                                                className="w-full">
+                                                                <FormLabel>Dirección</FormLabel>
+                                                                <FormControl>
+                                                                    <Input
+                                                                        placeholder="Dirección"
+                                                                        {...field}
+                                                                        className="w-full"
+                                                                        type="text"
+                                                                    />
+                                                                </FormControl>
+                                                                <FormMessage/>
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                    <FormField
+                                                        control={control}
+                                                        name={`agresores.${index}.comunaId`}
+                                                        render={({field}) => (
+                                                            <FormItem className="w-full">
+                                                                <FormLabel>Comuna</FormLabel>
+                                                                <Select onValueChange={field.onChange}
+                                                                        defaultValue={field.value}>
+                                                                    <FormControl>
+                                                                        <SelectTrigger>
+                                                                            <SelectValue
+                                                                                placeholder="Selecciona una comuna"/>
+                                                                        </SelectTrigger>
+                                                                    </FormControl>
+                                                                    <SelectContent>
+                                                                        {data.comunas.map((comuna) => (
+                                                                            <SelectItem key={comuna.id}
+                                                                                        value={comuna.id.toString()}>
+                                                                                {comuna.name}
+                                                                            </SelectItem>
+                                                                        ))}
+                                                                    </SelectContent>
+                                                                </Select>
+                                                                <FormMessage/>
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <Button
+                                                        type="button"
+                                                        onClick={() => remove(index)}
+                                                        variant="destructive"
+                                                        className="mt-4"
+                                                    >
+                                                        <span className="mr-1">Eliminar</span> <Trash2/>
+                                                    </Button>
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    ))}
+                                    <Button
+                                        type="button"
+                                        onClick={() =>
+                                            append({
+                                                name: "",
+                                                tipoAgresorId: "0",
+                                                lastName: "",
+                                                rut: "",
+                                                email: "",
+                                                phoneNumber: "",
+                                                comunaId: "",
+                                                address: ""
+                                            })
+                                        }
+                                        className="mt-4"
+                                    >
+                                        <span className="mr-1">Agregar nuevo agresor</span> <UserRoundPlus/>
+                                    </Button>
+                                </CardContent>
+                            </Card>
+                        </div>
+                        <div className="my-4">
+                            <Card>
+                                <CardHeader className="pb-0">
+                                    <CardTitle>Testigos</CardTitle>
+                                    <CardDescription>Ingresa la información sobre las personas que presenciaron el
+                                        incidente. Es fundamental asegurar que la información es
+                                        válida, ya que los testimonios pueden ser cruciales para respaldar la
+                                        denuncia.</CardDescription>
+                                    {errors.testigos && (
+                                        <Alert variant="destructive" className="mt-2">
+                                            {errors.testigos.message}
+                                        </Alert>
+                                    )}
+                                </CardHeader>
+                                <CardContent>
+                                    {fieldsTestigos.map((field, index) => (
+                                        <Card key={field.id} className="my-4">
+                                            <CardHeader>
+                                                <CardTitle>Testigo {index + 1}</CardTitle>
+                                            </CardHeader>
+                                            <CardContent className="flex flex-col gap-2">
+                                                <div className="flex justify-between gap-4">
+                                                    <FormField
+                                                        control={control}
+                                                        name={`testigos.${index}.rut`}
+                                                        render={({field}) => (
+                                                            <FormItem
+                                                                className="w-full">
+                                                                <FormLabel>RUT</FormLabel>
+                                                                <FormControl>
+                                                                    <InputRut
+                                                                        placeholder="RUT del testigo"
+                                                                        {...field}
+                                                                        className="w-full"
+                                                                    />
+                                                                </FormControl>
+                                                                <FormMessage/>
+                                                                <FormDescription>
+                                                                    Ingresa el RUT sin puntos ni guiones.
+                                                                </FormDescription>
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                    <FormField
+                                                        control={control}
+                                                        name={`testigos.${index}.name`}
+                                                        render={({field}) => (
+                                                            <FormItem
+                                                                className="w-full">
+                                                                <FormLabel>Nombre</FormLabel>
+                                                                <FormControl>
+                                                                    <Input
+                                                                        placeholder="Nombre del agresor"
+                                                                        {...field}
+                                                                        className="w-full"
+                                                                    />
+                                                                </FormControl>
+                                                                <FormMessage/>
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                    <FormField
+                                                        control={control}
+                                                        name={`testigos.${index}.lastName`}
+                                                        render={({field}) => (
+                                                            <FormItem
+                                                                className="w-full">
+                                                                <FormLabel>Apellido</FormLabel>
+                                                                <FormControl>
+                                                                    <Input
+                                                                        placeholder="Apellido del testigo"
+                                                                        {...field}
+                                                                        className="w-full"
+                                                                    />
+                                                                </FormControl>
+                                                                <FormMessage/>
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                </div>
+                                                <div className="flex justify-between gap-4">
+                                                    <FormField
+                                                        control={control}
+                                                        name={`testigos.${index}.email`}
+                                                        render={({field}) => (
+                                                            <FormItem
+                                                                className="w-full">
+                                                                <FormLabel>Email</FormLabel>
+                                                                <FormControl>
+                                                                    <Input
+                                                                        placeholder="Email del testigo"
+                                                                        {...field}
+                                                                        className="w-full"
+                                                                    />
+                                                                </FormControl>
+                                                                <FormMessage/>
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                    <FormField
+                                                        control={control}
+                                                        name={`testigos.${index}.phoneNumber`}
+                                                        render={({field}) => (
+                                                            <FormItem
+                                                                className="w-full">
+                                                                <FormLabel>Teléfono</FormLabel>
+                                                                <FormControl>
+                                                                    <Input
+                                                                        placeholder="Número de teléfono"
+                                                                        {...field}
+                                                                        className="w-full"
+                                                                        type="text"
+                                                                    />
+                                                                </FormControl>
+                                                                <FormMessage/>
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <Button
+                                                        type="button"
+                                                        onClick={() => removeTestigo(index)}
+                                                        variant="destructive"
+                                                        className="mt-4"
+                                                    >
+                                                        <span className="mr-1">Eliminar</span> <Trash2/>
+                                                    </Button>
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    ))}
+                                    <Button
+                                        type="button"
+                                        onClick={() =>
+                                            appendTestigo({
+                                                name: "",
+                                                lastName: "",
+                                                rut: "",
+                                                email: "",
+                                                phoneNumber: ""
+                                            })
+                                        }
+                                        className="mt-4"
+                                    >
+                                        <span className="mr-1">Agregar nuevo testigo</span> <UserRoundPlus/>
+                                    </Button>
+                                </CardContent>
+                            </Card>
+                        </div>
+                        <Button
+                            type="submit">
+                            Crear registro de agresión
+                        </Button>
                     </form>
                 </Form>
             )}
