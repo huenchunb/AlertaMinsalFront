@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import {ClipboardList, Frame, Siren, Hospital, Map, PieChart, Users} from "lucide-react"
+import {ClipboardList, Frame, Hospital, Map, PieChart, Siren, Users} from "lucide-react"
 
 import {NavMain} from "@/components/dashboards/admin//nav-main"
 //import {NavProjects} from "@/components/dashboards/admin/nav-projects"
@@ -52,12 +52,12 @@ const data = {
         },
         {
             title: "Agresiones",
-            url: "#",
+            url: "/dashboard/agresiones",
             icon: ClipboardList,
             items: [
                 {
-                    title: "Administrar",
-                    url: "#",
+                    title: "Crear",
+                    url: "/dashboard/agresiones/crear",
                 },
             ],
         }

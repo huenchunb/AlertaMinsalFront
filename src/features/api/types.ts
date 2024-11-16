@@ -57,7 +57,13 @@ export interface CreateEmpleadoRequestBody {
 export interface TipoAgresionCategoriaDto {
     id: number;
     name: string;
-    tipoAgresiones: LookupDto[];
+    tipoAgresionId: number;
+}
+
+export interface EmpleadoDefaultDto {
+    id: number;
+    fullName: string;
+    establecimientoId: number;
 }
 
 export interface GetDefaultsResponseDto {
@@ -68,5 +74,6 @@ export interface GetDefaultsResponseDto {
     tipoAgresores: LookupDto[];
     tipoAgresiones: LookupDto[];
     tipoAgresionesCategorias: TipoAgresionCategoriaDto[];
+    empleados: EmpleadoDefaultDto[]
     roles: RoleDto[];
 }
