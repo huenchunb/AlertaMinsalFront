@@ -4,12 +4,18 @@ import {useFieldArray, useForm} from "react-hook-form";
 import {z} from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
-import {useGetDefaultsQuery} from "@/features/api";
+import {useCreateAgresionMutation, useGetDefaultsQuery} from "@/features/api";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import React, {useEffect} from "react";
-import {EmpleadoDefaultDto, LookupDto} from "@/features/api/types";
+import {
+    AgresorCreateDto,
+    CreateAgresionCommand,
+    EmpleadoDefaultDto,
+    LookupDto,
+    TestigoCreateDto
+} from "@/features/api/types";
 import {Alert} from "@/components/ui/alert";
-import {CalendarIcon, Info, Trash2, UserRoundPlus} from "lucide-react"
+import {CalendarIcon, CircleCheckBig, CircleX, Info, Trash2, UserRoundPlus} from "lucide-react"
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {Button} from "@/components/ui/button";
@@ -36,14 +42,16 @@ export const formCreateAgresionSchema = z.object({
         }),
     agresores: z.array(
         z.object({
-            tipoAgresorId: z.string({required_error: "Debes seleccionar un tipo de agresor"}),
+            tipoAgresorId: z.number({required_error: "El tipo de agresor es requerido"})
+                .int().min(1, {message: "Debes seleccionar un tipo de agresor"}),
             name: z.string({required_error: "Debes ingresar un nombre"}).min(1, "El nombre es requerido"),
             lastName: z.string({required_error: "Debes ingresar un apellido"}).min(1, "El apellido es requerido"),
             rut: z.string({required_error: "Debes ingresar un rut"}).min(1, "El RUT es requerido"),
             email: z.string({required_error: "Debes ingresar un correo electrónico"}).email("Correo inválido"),
             phoneNumber: z.string({required_error: "Debes ingresar un número de teléfono"}),
             address: z.string({required_error: "Debes ingresar una dirección"}),
-            comunaId: z.string({required_error: "Debes seleccionar una comuna"})
+            comunaId: z.number({required_error: "La comuna es requerida"})
+                .int().min(1, {message: "Debes seleccionar una comuna"})
         })
     ).min(1, {message: "Debe haber al menos un agresor"}),
     testigos: z.array(
@@ -52,7 +60,7 @@ export const formCreateAgresionSchema = z.object({
             lastName: z.string({required_error: "Debes ingresar un apellido"}).min(1, "El apellido es requerido"),
             rut: z.string({required_error: "Debes ingresar un rut"}).min(1, "El RUT es requerido"),
             email: z.string({required_error: "Debes ingresar un correo electrónico"}).email("Correo inválido"),
-            phoneNumber: z.string({required_error: "Debes ingresar un número de teléfono"}),
+            address: z.string({required_error: "Debes ingresar una dirección"}),
         })
     ).min(1, {message: "Debe haber al menos un testigo"})
 });
@@ -63,6 +71,8 @@ const FormCreateAgresion = () => {
         refetchOnReconnect: true,
         refetchOnFocus: true,
     });
+
+    const [createAgresion] = useCreateAgresionMutation();
 
     const [empleados, setEmpleados] = React.useState<EmpleadoDefaultDto[]>([]);
     const [categorias, setCategorias] = React.useState<LookupDto[]>([]);
@@ -112,20 +122,67 @@ const FormCreateAgresion = () => {
         } else {
             setCategorias([]);
         }
-    }, [data, establecimientoId, tipoAgresionId]);
+    }, [data, establecimientoId, tipoAgresionId, setValue]);
 
 
-    const onSubmit = (data: z.infer<typeof formCreateAgresionSchema>) => {
-        toast({
-            title: "You submitted the following values:",
-            description: (
-                <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-                    <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-                </pre>
-            ),
-        });
+    const onSubmit = async (data: z.infer<typeof formCreateAgresionSchema>) => {
 
-        reset();
+        const agresores: AgresorCreateDto[] = data.agresores.map((item) => ({
+            tipoAgresorId: item.tipoAgresorId,
+            rut: item.rut,
+            name: item.name,
+            lastName: item.lastName,
+            address: item.address,
+            comunaId: item.comunaId
+        }))
+
+        const testigos: TestigoCreateDto[] = data.testigos.map((item) => ({
+            rut: item.rut,
+            name: item.name,
+            lastName: item.lastName,
+            email: item.email,
+            address: item.address
+        }));
+
+        const createAgresionCommand: CreateAgresionCommand = {
+            fechaAgresion: data.fechaAgresion.toISOString(),
+            empleadoId: data.empleadoId,
+            categoriasAgresionesId: data.categoriasAgresionesId,
+            agresores,
+            testigos
+        }
+
+        await createAgresion(createAgresionCommand)
+            .unwrap()
+            .then(() => {
+                toast({
+                    title: "Registro éxitoso",
+                    description: (
+                        <Alert className="border border-green-600 bg-green-100">
+                            <div className="flex start">
+                                <p className="text-green-800 mr-2">Se ha registrado la agresión correctamente,
+                                    el afectado debe revisar y aprobar esta agresión para finalizar el proceso.
+                                </p> <CircleCheckBig size={20} className="text-green-800"/>
+                            </div>
+                        </Alert>
+                    ),
+                });
+                reset()
+            })
+            .catch(() => {
+                toast({
+                    title: "You submitted the following values:",
+                    description: (
+                        <Alert className="border border-red-600 bg-red-100">
+                            <div className="flex start">
+                                <p className="text-red-800 mr-2">Ocurrio un error al agregar el registro de agresión.
+                                    Intente nuevamente.
+                                </p> <CircleX size={20} className="text-red-800"/>
+                            </div>
+                        </Alert>
+                    ),
+                });
+            })
     };
 
     return (
@@ -317,7 +374,7 @@ const FormCreateAgresion = () => {
                                                                 key={item.id}
                                                                 control={control}
                                                                 name="categoriasAgresionesId"
-                                                                render={({field}) => (
+                                                                render={() => (
                                                                     <FormItem
                                                                         key={item.id}
                                                                         className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
@@ -373,6 +430,39 @@ const FormCreateAgresion = () => {
                                                 <CardTitle>Agresor {index + 1}</CardTitle>
                                             </CardHeader>
                                             <CardContent className="flex flex-col gap-2">
+                                                <div>
+                                                    <FormField
+                                                        control={control}
+                                                        name={`agresores.${index}.tipoAgresorId`}
+                                                        render={({field}) => (
+                                                            <FormItem className="w-full">
+                                                                <FormLabel>Tipo de agresion</FormLabel>
+                                                                <Select
+                                                                    onValueChange={(value) => field.onChange(Number(value))}
+                                                                    defaultValue={field.value ? field.value.toString() : ""}>
+                                                                    <FormControl>
+                                                                        <SelectTrigger>
+                                                                            <SelectValue
+                                                                                placeholder="Selecciona un tipo de agresor"/>
+                                                                        </SelectTrigger>
+                                                                    </FormControl>
+                                                                    <SelectContent>
+                                                                        {data.tipoAgresores.map((agresor) => (
+                                                                            <SelectItem key={agresor.id}
+                                                                                        value={agresor.id.toString()}>
+                                                                                {agresor.name}
+                                                                            </SelectItem>
+                                                                        ))}
+                                                                    </SelectContent>
+                                                                </Select>
+                                                                <FormMessage/>
+                                                                <FormDescription className="flex gap-2">
+                                                                    <span>Selecciona el tipo de agresor</span>
+                                                                </FormDescription>
+                                                            </FormItem>
+                                                        )}
+                                                    />
+                                                </div>
                                                 <div className="flex justify-between gap-4">
                                                     <FormField
                                                         control={control}
@@ -497,8 +587,9 @@ const FormCreateAgresion = () => {
                                                         render={({field}) => (
                                                             <FormItem className="w-full">
                                                                 <FormLabel>Comuna</FormLabel>
-                                                                <Select onValueChange={field.onChange}
-                                                                        defaultValue={field.value}>
+                                                                <Select
+                                                                    onValueChange={(value) => field.onChange(Number(value))}
+                                                                    defaultValue={field.value ? field.value.toString() : ""}>
                                                                     <FormControl>
                                                                         <SelectTrigger>
                                                                             <SelectValue
@@ -537,12 +628,12 @@ const FormCreateAgresion = () => {
                                         onClick={() =>
                                             append({
                                                 name: "",
-                                                tipoAgresorId: "0",
+                                                tipoAgresorId: 0,
                                                 lastName: "",
                                                 rut: "",
                                                 email: "",
                                                 phoneNumber: "",
-                                                comunaId: "",
+                                                comunaId: 0,
                                                 address: ""
                                             })
                                         }
@@ -654,14 +745,14 @@ const FormCreateAgresion = () => {
                                                     />
                                                     <FormField
                                                         control={control}
-                                                        name={`testigos.${index}.phoneNumber`}
+                                                        name={`testigos.${index}.address`}
                                                         render={({field}) => (
                                                             <FormItem
                                                                 className="w-full">
-                                                                <FormLabel>Teléfono</FormLabel>
+                                                                <FormLabel>Dirección</FormLabel>
                                                                 <FormControl>
                                                                     <Input
-                                                                        placeholder="Número de teléfono"
+                                                                        placeholder="Dirección"
                                                                         {...field}
                                                                         className="w-full"
                                                                         type="text"
@@ -693,7 +784,7 @@ const FormCreateAgresion = () => {
                                                 lastName: "",
                                                 rut: "",
                                                 email: "",
-                                                phoneNumber: ""
+                                                address: ""
                                             })
                                         }
                                         className="mt-4"

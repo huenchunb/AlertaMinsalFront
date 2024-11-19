@@ -1,10 +1,11 @@
 "use client";
 
 import React from 'react';
-import {useGetUserRolesHook} from "@/components/hooks/get-roles";
+import {useDashboardHook} from "@/components/hooks/get-roles";
+import {Map} from "@/components/dashboards/maps/Map";
 
 const DashboardPage = () => {
-    useGetUserRolesHook();
+    const {dataGeoLocation} = useDashboardHook();
 
     return (
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
@@ -13,7 +14,9 @@ const DashboardPage = () => {
                 <div className="aspect-video rounded-xl bg-muted/50"/>
                 <div className="aspect-video rounded-xl bg-muted/50"/>
             </div>
-            <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min"/>
+            <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min">
+                <Map data={dataGeoLocation}/>
+            </div>
         </div>
     );
 };

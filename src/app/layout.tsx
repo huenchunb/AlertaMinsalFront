@@ -7,6 +7,7 @@ import {Provider} from "react-redux";
 import {persistor, store} from "@/store";
 import {PersistGate} from "redux-persist/integration/react";
 import {Toaster} from "@/components/ui/toaster";
+import 'leaflet/dist/leaflet.css';
 
 const geistSans = localFont({
     src: "./fonts/GeistVF.woff",
@@ -19,7 +20,6 @@ const geistMono = localFont({
     weight: "100 900",
 });
 
-
 export default function RootLayout({
                                        children,
                                    }: Readonly<{
@@ -31,13 +31,12 @@ export default function RootLayout({
             className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
         <Provider store={store}>
-            <PersistGate persistor={persistor}>
+            <PersistGate persistor={persistor} loading={null}>
                 {children}
-                <Toaster />
+                <Toaster/>
             </PersistGate>
         </Provider>
         </body>
         </html>
-    )
-        ;
+    );
 }

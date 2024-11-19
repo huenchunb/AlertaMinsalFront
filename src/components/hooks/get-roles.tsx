@@ -1,10 +1,11 @@
-import {useGetUserRolesQuery} from "@/features/api";
+import {useGetAgresionGeoLocationQuery, useGetUserRolesQuery} from "@/features/api";
 import {useAppDispatch} from "@/store/hooks";
 import {useEffect} from "react";
 import {setRol} from "@/features/auth/slice";
 
-export const useGetUserRolesHook = () => {
-    const {data, isLoading} = useGetUserRolesQuery();
+export const useDashboardHook = () => {
+    const {data} = useGetUserRolesQuery();
+    const {data: dataGeoLocation, isLoading: isLoadingGeoLocation} = useGetAgresionGeoLocationQuery();
     const dispatch = useAppDispatch();
 
     useEffect(() => {
@@ -14,6 +15,7 @@ export const useGetUserRolesHook = () => {
     }, [data, dispatch]);
 
     return {
-        isLoading,
+        dataGeoLocation,
+        isLoadingGeoLocation
     };
 };

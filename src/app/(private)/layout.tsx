@@ -13,6 +13,7 @@ import {
     BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import {usePathname} from "next/navigation";
+import 'leaflet/dist/leaflet.css';
 
 export default function LayoutDashboard({
                                             children,

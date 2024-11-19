@@ -1,5 +1,7 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
 import {
+    AgresionGeoLocationDto,
+    CreateAgresionCommand,
     CreateEmpleadoRequestBody,
     EmpleadoDto,
     GetDefaultsResponseDto,
@@ -35,6 +37,9 @@ export const api = createApi({
             query: () => '/Defaults',
             providesTags: ['Defaults']
         }),
+        getAgresionGeoLocation: builder.query<AgresionGeoLocationDto[], void>({
+            query: () => '/Agresiones/GetAgresionesGeoLocation'
+        }),
         createEmpleados: builder.mutation<void, CreateEmpleadoRequestBody>({
             query: (body) => ({
                 url: '/Empleados',
@@ -42,7 +47,14 @@ export const api = createApi({
                 body: body,
                 invalidatesTags: ['Empleados']
             })
-        })
+        }),
+        createAgresion: builder.mutation<void, CreateAgresionCommand>({
+            query: (body) => ({
+                url: "/Agresiones",
+                method: 'POST',
+                body: body,
+            })
+        }),
     }),
 });
 
@@ -51,5 +63,7 @@ export const {
     useGetUserRolesQuery,
     useGetEmpleadosQuery,
     useCreateEmpleadosMutation,
-    useGetDefaultsQuery
+    useGetDefaultsQuery,
+    useCreateAgresionMutation,
+    useGetAgresionGeoLocationQuery
 } = api;

@@ -77,3 +77,50 @@ export interface GetDefaultsResponseDto {
     empleados: EmpleadoDefaultDto[]
     roles: RoleDto[];
 }
+
+export interface CreateAgresionCommand {
+    fechaAgresion: string;
+    empleadoId: number;
+    categoriasAgresionesId: number[];
+    agresores: AgresorCreateDto[];
+    testigos: TestigoCreateDto[];
+}
+
+export interface AgresorCreateDto {
+    tipoAgresorId: number;
+    rut: string;
+    name: string;
+    lastName: string;
+    address: string;
+    comunaId: number;
+}
+
+export interface TestigoCreateDto {
+    rut: string;
+    name: string;
+    lastName: string;
+    email: string;
+    address: string;
+}
+
+export interface AgresionGeoLocationDto {
+    id: number;
+    name: string;
+    longitude: number;
+    latitude: number;
+    agresionConArmaFuego: number;
+    agresionesConArmaBlanca: number;
+    agresionesConObjetoContundente: number;
+    agresionesSexualesTocaciones: number;
+    agresionesEmpujonesCombos: number;
+    agresionesOtro: number;
+    agresionesInfraestructura: number;
+    agresionesSexualesLenguaje: number;
+    agresionesAmenazas: number;
+    agresionesInsultos: number;
+    agresionesBurlas: number;
+    agresionesRedesSociales: number;
+    agresionesOtroVerbal: number;
+    totalAgresionesFisicas: number;
+    totalAgresionesVerbales: number;
+}
