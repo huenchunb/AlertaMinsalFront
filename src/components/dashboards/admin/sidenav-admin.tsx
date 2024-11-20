@@ -33,8 +33,8 @@ const data = {
             isActive: true,
             items: [
                 {
-                    title: "Administrar",
-                    url: "#",
+                    title: "Ver listado",
+                    url: "/dashboard/establecimientos",
                 },
             ],
         },
@@ -45,7 +45,7 @@ const data = {
             isActive: true,
             items: [
                 {
-                    title: "Administrar",
+                    title: "Ver listado",
                     url: "/dashboard/empleados",
                 },
             ],
@@ -56,7 +56,11 @@ const data = {
             icon: ClipboardList,
             items: [
                 {
-                    title: "Crear",
+                    title: "Ver listado",
+                    url: "/dashboard/agresiones",
+                },
+                {
+                    title: "Reportar agresión",
                     url: "/dashboard/agresiones/crear",
                 },
             ],

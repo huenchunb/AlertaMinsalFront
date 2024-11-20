@@ -41,7 +41,7 @@ export const Map: React.FC<MapProps> = ({data}) => {
     return (
         <MapContainer
             center={[-33.4489, -70.6693]} // Coordenadas de Santiago de Chile
-            zoom={13}
+            zoom={12}
             className="w-full h-full rounded"
         >
             <TileLayer

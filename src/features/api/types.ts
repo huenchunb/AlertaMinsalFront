@@ -124,3 +124,21 @@ export interface AgresionGeoLocationDto {
     totalAgresionesFisicas: number;
     totalAgresionesVerbales: number;
 }
+
+export interface EstablecimientoDto {
+    id: number;
+    name: string;
+    tipo: string;
+    nivel: string;
+    address: string;
+    streetNumber: string;
+    phoneNumber: number;
+    urgency: boolean;
+    tipoUrgencia: string;
+    longitude: number;
+    latitude: number;
+    complejidad: string;
+    tipoAtencion: string;
+    comuna: string;
+    region: string;
+}

@@ -4,6 +4,7 @@ import {
     CreateAgresionCommand,
     CreateEmpleadoRequestBody,
     EmpleadoDto,
+    EstablecimientoDto,
     GetDefaultsResponseDto,
     LoginRequestBody,
     PaginatedList
@@ -17,7 +18,7 @@ const baseQuery = fetchBaseQuery({
 export const api = createApi({
     reducerPath: 'api',
     baseQuery: baseQuery,
-    tagTypes: ['Empleados', 'Defaults'],
+    tagTypes: ['Empleados', 'Defaults', 'Establecimientos'],
     endpoints: (builder) => ({
         login: builder.mutation<void, LoginRequestBody>({
             query: (credentials) => ({
@@ -29,8 +30,12 @@ export const api = createApi({
         getUserRoles: builder.query<string[], void>({
             query: () => "/Identities/GetUserRoles"
         }),
-        getEmpleados: builder.query<PaginatedList<EmpleadoDto>, void>({
-            query: () => "/Empleados?pageNumber=1&pageSize=10",
+        getEstablecimientos: builder.query<PaginatedList<EstablecimientoDto>, { pageNumber: number, pageSize: number }>({
+            query: ({ pageNumber, pageSize }) => `/Establecimientos?pageNumber=${pageNumber}&pageSize=${pageSize}`,
+            providesTags: ['Establecimientos']
+        }),
+        getEmpleados: builder.query<PaginatedList<EmpleadoDto>,  { pageNumber: number, pageSize: number }>({
+            query: ({ pageNumber, pageSize }) => `/Empleados?pageNumber=${pageNumber}&pageSize=${pageSize}`,
             providesTags: ['Empleados']
         }),
         getDefaults: builder.query<GetDefaultsResponseDto, void>({
@@ -65,5 +70,6 @@ export const {
     useCreateEmpleadosMutation,
     useGetDefaultsQuery,
     useCreateAgresionMutation,
-    useGetAgresionGeoLocationQuery
+    useGetAgresionGeoLocationQuery,
+    useGetEstablecimientosQuery
 } = api;
