@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {z} from "zod";
 import {isValidRUT} from "@/utils/functions";
 import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
@@ -11,7 +11,6 @@ import {CreateEmpleadoRequestBody} from "@/features/api/types";
 import {Spinner} from "@/components/ui/spinner";
 import {InputRut} from "@/components/ui/input-rut";
 import {Alert} from "@/components/ui/alert";
-import {useAppDispatch} from "@/store/hooks";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 import {CircleCheckBig, CircleX, MessageSquareWarning} from "lucide-react"
 import {toast} from "@/hooks/use-toast";
@@ -34,13 +33,6 @@ export const formCreateEmpleadoSchema = z.object({
 })
 
 const FormCreateEmpleado = () => {
-    const dispatch = useAppDispatch();
-    const [showErrors, setShowErrors] = useState<{
-        errorCreatingUser: boolean,
-        errorRoleNotFound: boolean,
-        errorGetDefaults: boolean
-    }>({errorCreatingUser: false, errorRoleNotFound: false, errorGetDefaults: false});
-
     const {data, isLoading: isLoadingDefaults} = useGetDefaultsQuery(undefined, {
         refetchOnMountOrArgChange: true,
         refetchOnReconnect: true,
@@ -65,12 +57,11 @@ const FormCreateEmpleado = () => {
         }
     });
 
-    const {handleSubmit, control, reset} = form;
+    const {handleSubmit, control, getValues} = form;
 
     const [createEmpleado, {isLoading}] = useCreateEmpleadosMutation();
 
     const onSubmit = (values: z.infer<typeof formCreateEmpleadoSchema>) => {
-        setShowErrors({...showErrors, errorCreatingUser: false, errorRoleNotFound: false});
         const empleado: CreateEmpleadoRequestBody = {
             rut: values.rut,
             firstName: values.firstName,
@@ -90,6 +81,20 @@ const FormCreateEmpleado = () => {
         createEmpleado(empleado)
             .unwrap()
             .then(() => {
+
+                const currentValues = getValues(["mutualidadId", "estamentoId", "establecimientoId", "comunaId", "rol"])
+
+                form.reset({
+                    ...currentValues,
+                    rut: "",
+                    firstName: "",
+                    lastName: "",
+                    email: "",
+                    phoneNumber: "",
+                    address: "",
+                    streetNumber: "",
+                })
+
                 toast({
                     title: "Registro éxitoso",
                     description: (
@@ -413,17 +418,6 @@ const FormCreateEmpleado = () => {
                                 />
                             </div>
                         </div>
-                        {showErrors.errorCreatingUser && (
-                            <Alert variant="destructive">
-                                El empleado ya se encuentra registrado. Intenta con otro RUN o correo electrónico.
-                            </Alert>
-                        )}
-                        {showErrors.errorRoleNotFound && (
-                            <Alert variant="destructive">
-                                Ocurrió un error al crear el usuario y asignar el rol. Si el problema persiste, contacta
-                                al administrador.
-                            </Alert>
-                        )}
                         {isLoading ? (
                             <div className="w-full flex justify-center">
                                 <Spinner size={40}/>

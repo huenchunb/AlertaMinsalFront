@@ -268,9 +268,6 @@ export function DataTableEstablishment({
                     {table.getFilteredSelectedRowModel().rows.length} of{" "}
                     {table.getFilteredRowModel().rows.length} row(s) selected.
                 </div>*/}
-                <div className="flex-1 text-sm text-muted-foreground">
-                    {data.length} registros de un total de {totalCounts}.
-                </div>
                 <div className="space-x-2">
                     <Button
                         variant="outline"

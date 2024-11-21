@@ -9,8 +9,8 @@ const CrearEmpleadoPage = () => {
     return (
         <Card className="mx-8">
             <CardHeader>
-                <CardTitle>Crear nueva agresión</CardTitle>
-                <CardDescription>Aquí puedes registrar una nueva agresión en el sistema</CardDescription>
+                <CardTitle>Crear nuevo empleado</CardTitle>
+                <CardDescription>Aquí puedes registrar un nuevo empleado, asignarle un establecimiento y un rol en la plataforma</CardDescription>
             </CardHeader>
             <Separator/>
             <CardContent className="mt-4">

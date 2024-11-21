@@ -89,10 +89,10 @@ export interface CreateAgresionCommand {
 export interface AgresorCreateDto {
     tipoAgresorId: number;
     rut: string;
-    name: string;
-    lastName: string;
-    address: string;
-    comunaId: number;
+    name: string | null;
+    lastName: string | null;
+    address: string | null;
+    comunaId: number | null;
 }
 
 export interface TestigoCreateDto {
