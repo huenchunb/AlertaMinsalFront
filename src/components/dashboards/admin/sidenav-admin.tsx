@@ -48,6 +48,10 @@ const data = {
                     title: "Ver listado",
                     url: "/dashboard/empleados",
                 },
+                {
+                    title: "Crear",
+                    url: "/dashboard/empleados/crear",
+                },
             ],
         },
         {

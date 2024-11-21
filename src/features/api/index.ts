@@ -1,10 +1,12 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react';
 import {
+    AgresionesCountByCategories,
     AgresionGeoLocationDto,
     CreateAgresionCommand,
     CreateEmpleadoRequestBody,
     EmpleadoDto,
     EstablecimientoDto,
+    GetAggressionSummaryByDate,
     GetDefaultsResponseDto,
     LoginRequestBody,
     PaginatedList
@@ -30,12 +32,15 @@ export const api = createApi({
         getUserRoles: builder.query<string[], void>({
             query: () => "/Identities/GetUserRoles"
         }),
-        getEstablecimientos: builder.query<PaginatedList<EstablecimientoDto>, { pageNumber: number, pageSize: number }>({
-            query: ({ pageNumber, pageSize }) => `/Establecimientos?pageNumber=${pageNumber}&pageSize=${pageSize}`,
+        getEstablecimientos: builder.query<PaginatedList<EstablecimientoDto>, {
+            pageNumber: number,
+            pageSize: number
+        }>({
+            query: ({pageNumber, pageSize}) => `/Establecimientos?pageNumber=${pageNumber}&pageSize=${pageSize}`,
             providesTags: ['Establecimientos']
         }),
-        getEmpleados: builder.query<PaginatedList<EmpleadoDto>,  { pageNumber: number, pageSize: number }>({
-            query: ({ pageNumber, pageSize }) => `/Empleados?pageNumber=${pageNumber}&pageSize=${pageSize}`,
+        getEmpleados: builder.query<PaginatedList<EmpleadoDto>, { pageNumber: number, pageSize: number }>({
+            query: ({pageNumber, pageSize}) => `/Empleados?pageNumber=${pageNumber}&pageSize=${pageSize}`,
             providesTags: ['Empleados']
         }),
         getDefaults: builder.query<GetDefaultsResponseDto, void>({
@@ -44,6 +49,12 @@ export const api = createApi({
         }),
         getAgresionGeoLocation: builder.query<AgresionGeoLocationDto[], void>({
             query: () => '/Agresiones/GetAgresionesGeoLocation'
+        }),
+        getAgresionesCountByCategories: builder.query<AgresionesCountByCategories[], void>({
+            query: () => '/Agresiones/GetAgresionesCountByCategories'
+        }),
+        getAggressionSummaryByDate: builder.query<GetAggressionSummaryByDate[], void>({
+            query: () => '/Agresiones/GetAggressionSummaryByDate'
         }),
         createEmpleados: builder.mutation<void, CreateEmpleadoRequestBody>({
             query: (body) => ({
@@ -71,5 +82,7 @@ export const {
     useGetDefaultsQuery,
     useCreateAgresionMutation,
     useGetAgresionGeoLocationQuery,
-    useGetEstablecimientosQuery
+    useGetEstablecimientosQuery,
+    useGetAgresionesCountByCategoriesQuery,
+    useGetAggressionSummaryByDateQuery
 } = api;

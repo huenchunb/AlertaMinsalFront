@@ -142,3 +142,16 @@ export interface EstablecimientoDto {
     comuna: string;
     region: string;
 }
+
+export interface AgresionesCountByCategories {
+    id: number;
+    name: string;
+    tipoAgresionId: number;
+    totalAgresiones: number;
+}
+
+export interface GetAggressionSummaryByDate {
+    date: string;
+    physicalAggressions: number;
+    verbalAggressions: number;
+}
