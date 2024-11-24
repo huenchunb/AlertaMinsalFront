@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import { useGetEstablecimientosQuery } from "@/features/api";
+import { DataTableEstablishment } from "@/components/datatables/datatable-establishment";
 import {
   Card,
   CardContent,
@@ -8,11 +9,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import React, { useState } from "react";
 import { Separator } from "@/components/ui/separator";
-import { DataTableEmployee } from "@/components/datatables/datatable-employee";
-import { useGetEmpleadosQuery } from "@/features/api";
 
-const EmpleadosPage = () => {
+const EstablecimientoPage = () => {
   const [pageNumber, setPageNumber] = useState(1);
   const pageSize = 15;
 
@@ -29,10 +29,12 @@ const EmpleadosPage = () => {
     }
   };
 
-  const { data } = useGetEmpleadosQuery(
+  const { data } = useGetEstablecimientosQuery(
     { pageNumber, pageSize },
     {
       refetchOnMountOrArgChange: true,
+      refetchOnFocus: true,
+      refetchOnReconnect: true,
     }
   );
 
@@ -41,24 +43,23 @@ const EmpleadosPage = () => {
       <div className="p-4">
         <Card>
           <CardHeader>
-            <CardTitle>Empleados</CardTitle>
+            <CardTitle>Establecimientos de salud</CardTitle>
             <CardDescription>
-              Aquí puedes visualizar el listado completo de los empleados de los
-              establecimientos de salud registrados en el sistema con facilidad,
-              además podrás ver información más detallada de cada uno.
+              Aquí puedes visualizar el listado completo de establecimientos de
+              salud registrados en el sistema con facilidad, además podrás ver
+              información más detallada de cada establecimiento.
             </CardDescription>
           </CardHeader>
           <Separator />
           <CardContent>
             {data && (
-              <DataTableEmployee
+              <DataTableEstablishment
                 data={data.items}
-                handlePrevious={handlePreviousPage}
-                handleNextPage={handleNextPage}
                 hasPreviousPage={data.hasPreviousPage}
                 hasNextPage={data.hasNextPage}
+                handlePreviousAction={handlePreviousPage}
+                handleNextPageAction={handleNextPage}
                 pageSize={pageSize}
-                totalCounts={data.totalCount}
               />
             )}
           </CardContent>
@@ -70,4 +71,4 @@ const EmpleadosPage = () => {
   return <>{handleRenderEstablishment()}</>;
 };
 
-export default EmpleadosPage;
+export default EstablecimientoPage;

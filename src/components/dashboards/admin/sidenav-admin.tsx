@@ -1,115 +1,132 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import {ClipboardList, Frame, Hospital, Map, PieChart, Siren, Users} from "lucide-react"
-
-import {NavMain} from "@/components/dashboards/admin//nav-main"
-//import {NavProjects} from "@/components/dashboards/admin/nav-projects"
-import {NavUser} from "@/components/dashboards/admin/nav-user"
+import * as React from "react";
 import {
-    Sidebar,
-    SidebarContent,
-    SidebarFooter,
-    SidebarHeader,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-    SidebarRail,
-} from "@/components/ui/sidebar"
+  ClipboardList,
+  Frame,
+  Hospital,
+  Map,
+  PieChart,
+  Users,
+} from "lucide-react";
+
+import { NavMain } from "@/components/dashboards/admin//nav-main";
+//import {NavProjects} from "@/components/dashboards/admin/nav-projects"
+import { NavUser } from "@/components/dashboards/admin/nav-user";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarRail,
+} from "@/components/ui/sidebar";
 import Link from "next/link";
+import { useAppSelector } from "@/store/hooks";
+import Image from "next/image";
 
 // This is sample data.
 const data = {
-    user: {
-        name: "shadcn",
-        email: "m@example.com",
-        avatar: "/avatars/shadcn.jpg",
+  user: {
+    name: "Administrador",
+    email: "adminitrador@localhost.com",
+    avatar: "/avatars/shadcn.jpg",
+  },
+  navMain: [
+    {
+      title: "Establecimientos",
+      url: "#",
+      icon: Hospital,
+      isActive: true,
+      items: [
+        {
+          title: "Ver listado",
+          url: "/dashboard/establecimientos",
+        },
+        {
+          title: "Crear",
+          url: "/dashboard/establecimientos/crear",
+        },
+      ],
     },
-    navMain: [
+    {
+      title: "Empleados",
+      url: "#",
+      icon: Users,
+      isActive: true,
+      items: [
         {
-            title: "Establecimientos",
-            url: "#",
-            icon: Hospital,
-            isActive: true,
-            items: [
-                {
-                    title: "Administrar",
-                    url: "#",
-                },
-            ],
+          title: "Ver listado",
+          url: "/dashboard/empleados",
         },
         {
-            title: "Empleados",
-            url: "#",
-            icon: Users,
-            isActive: true,
-            items: [
-                {
-                    title: "Administrar",
-                    url: "/dashboard/empleados",
-                },
-            ],
+          title: "Crear",
+          url: "/dashboard/empleados/crear",
+        },
+      ],
+    },
+    {
+      title: "Agresiones",
+      url: "/dashboard/agresiones",
+      icon: ClipboardList,
+      items: [
+        {
+          title: "Ver listado",
+          url: "/dashboard/agresiones",
         },
         {
-            title: "Agresiones",
-            url: "/dashboard/agresiones",
-            icon: ClipboardList,
-            items: [
-                {
-                    title: "Crear",
-                    url: "/dashboard/agresiones/crear",
-                },
-            ],
-        }
-    ],
-    projects: [
-        {
-            name: "Design Engineering",
-            url: "#",
-            icon: Frame,
+          title: "Reportar agresión",
+          url: "/dashboard/agresiones/crear",
         },
-        {
-            name: "Sales & Marketing",
-            url: "#",
-            icon: PieChart,
-        },
-        {
-            name: "Travel",
-            url: "#",
-            icon: Map,
-        },
-    ],
-}
+      ],
+    },
+  ],
+  projects: [
+    {
+      name: "Design Engineering",
+      url: "#",
+      icon: Frame,
+    },
+    {
+      name: "Sales & Marketing",
+      url: "#",
+      icon: PieChart,
+    },
+    {
+      name: "Travel",
+      url: "#",
+      icon: Map,
+    },
+  ],
+};
 
-export function SidenavAdmin({...props}: React.ComponentProps<typeof Sidebar>) {
-    return (
-        <Sidebar collapsible="icon" {...props}>
-            <SidebarHeader>
-                <SidebarMenu>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton size="lg" asChild>
-                            <Link href={"/dashboard"}>
-                                <div
-                                    className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                                    <Siren className="size-4"/>
-                                </div>
-                                <div className="flex flex-col gap-0.5 leading-none">
-                                    <span className="font-semibold">ALERTA MINSAL</span>
-                                    <span className="">v1.0.0</span>
-                                </div>
-                            </Link>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                </SidebarMenu>
-            </SidebarHeader>
-            <SidebarContent>
-                <NavMain items={data.navMain}/>
-                {/*<NavProjects projects={data.projects}/>*/}
-            </SidebarContent>
-            <SidebarFooter>
-                <NavUser user={data.user}/>
-            </SidebarFooter>
-            <SidebarRail/>
-        </Sidebar>
-    )
+export function SidenavAdmin({
+  ...props
+}: React.ComponentProps<typeof Sidebar>) {
+  const { isAdministrator, isJefatura } = useAppSelector((state) => state.auth);
+
+  return (
+    <Sidebar collapsible="icon" {...props}>
+      <SidebarHeader>
+        <SidebarMenu className="text-center">
+          <Link href={"/dashboard"} className="flex justify-center">
+            <Image
+              src="/img/logo-minsal.png"
+              alt="logo"
+              width={160}
+              height={60}
+            />
+          </Link>
+        </SidebarMenu>
+      </SidebarHeader>
+      <SidebarContent>
+        {isAdministrator && <NavMain items={data.navMain} />}
+        {isJefatura && <div>Menu de navegación jefatura</div>}
+      </SidebarContent>
+      <SidebarFooter>
+        <NavUser user={data.user} />
+      </SidebarFooter>
+      <SidebarRail />
+    </Sidebar>
+  );
 }
