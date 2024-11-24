@@ -1,4 +1,5 @@
 import {
+  useGetAggressionsSummaryQuery,
   useGetAggressionSummaryByDateQuery,
   useGetAgresionesCountByCategoriesQuery,
   useGetAgresionGeoLocationQuery,
@@ -37,6 +38,15 @@ export const useDashboardHook = () => {
     refetchOnFocus: true,
   });
 
+  const { data: dataAggressionSummary } = useGetAggressionsSummaryQuery(
+    undefined,
+    {
+      refetchOnMountOrArgChange: true,
+      refetchOnReconnect: true,
+      refetchOnFocus: true,
+    }
+  );
+
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -50,5 +60,6 @@ export const useDashboardHook = () => {
     isLoadingGeoLocation,
     dataByCategories,
     dataByDate,
+    dataAggressionSummary,
   };
 };

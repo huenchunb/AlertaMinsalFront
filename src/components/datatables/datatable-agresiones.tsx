@@ -1,6 +1,4 @@
-"use client";
-
-import * as React from "react";
+import { AggressionDto } from "@/features/api/types";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -13,9 +11,11 @@ import {
   useReactTable,
   VisibilityState,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
+import React from "react";
+import { Button } from "../ui/button";
+import { ChevronDown, MoreHorizontal } from "lucide-react";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -24,8 +24,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
+} from "../ui/dropdown-menu";
+import { Input } from "../ui/input";
 import {
   Table,
   TableBody,
@@ -33,104 +33,39 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { EmpleadoDto } from "@/features/api/types";
+} from "../ui/table";
 
-export const columns: ColumnDef<EmpleadoDto>[] = [
-  /* {
-         id: "select",
-         header: ({table}) => (
-             <div className="flex items-center">
-                 <Checkbox
-                     checked={
-                         table.getIsAllPageRowsSelected() ||
-                         (table.getIsSomePageRowsSelected() && "indeterminate")
-                     }
-                     onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-                     aria-label="Seleccionar todo"
-                 />
-             </div>
-         ),
-         cell: ({row}) => (
-             <div className="flex items-center">
-                 <Checkbox
-                     checked={row.getIsSelected()}
-                     onCheckedChange={(value) => row.toggleSelected(!!value)}
-                     aria-label="Seleccionar fila"
-                 />
-             </div>
-         ),
-         enableSorting: false,
-         enableHiding: false,
-     },*/
+export const columns: ColumnDef<AggressionDto>[] = [
   {
-    accessorKey: "rutNormalized",
-    header: "Run",
+    accessorKey: "agresionId",
+    header: "ID",
     cell: ({ row }) => (
-      <div className="uppercase">{row.getValue("rutNormalized")}</div>
+      <div className="uppercase">{row.getValue("agresionId")}</div>
     ),
   },
   {
-    accessorKey: "fullName",
-    header: "Nombre completo",
+    accessorKey: "tipoAgresion",
+    header: "Tipo de agresión",
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("fullName")}</div>
+      <div className="capitalize">{row.getValue("tipoAgresion")}</div>
     ),
   },
   {
-    accessorKey: "email",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Correo electrónico
-          <ArrowUpDown />
-        </Button>
-      );
-    },
-    cell: ({ row }) => <div className="lowercase">{row.getValue("email")}</div>,
-  },
-  {
-    accessorKey: "phoneNumber",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Teléfono
-          <ArrowUpDown />
-        </Button>
-      );
-    },
+    accessorKey: "fechaAgresion",
+    header: "Fecha",
     cell: ({ row }) => (
-      <div className="uppercase">{row.getValue("phoneNumber")}</div>
-    ),
-  },
-  {
-    accessorKey: "comuna",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Comuna
-          <ArrowUpDown />
-        </Button>
-      );
-    },
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("comuna")}</div>
+      <div className="capitalize">
+        {format(new Date(row.getValue("fechaAgresion")), "dd-MM-yyyy", {
+          locale: es,
+        })}
+      </div>
     ),
   },
   {
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const employeeDto = row.original;
+      const agresion = row.original;
 
       return (
         <DropdownMenu>
@@ -146,7 +81,7 @@ export const columns: ColumnDef<EmpleadoDto>[] = [
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() =>
-                navigator.clipboard.writeText(employeeDto.id.toString())
+                navigator.clipboard.writeText(agresion.agresionId.toString())
               }
             >
               Copiar ID
@@ -158,8 +93,8 @@ export const columns: ColumnDef<EmpleadoDto>[] = [
   },
 ];
 
-export interface DataTableEmployeeProps {
-  data: EmpleadoDto[];
+export interface DataTableAgresiones {
+  data: AggressionDto[];
   hasPreviousPage: boolean;
   hasNextPage: boolean;
   handlePrevious: () => void;
@@ -168,14 +103,14 @@ export interface DataTableEmployeeProps {
   totalCounts: number;
 }
 
-export function DataTableEmployee({
+export const DataTableAgresiones = ({
   data,
   handlePrevious,
   handleNextPage,
   hasNextPage,
   hasPreviousPage,
   pageSize,
-}: DataTableEmployeeProps) {
+}: DataTableAgresiones) => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -212,12 +147,12 @@ export function DataTableEmployee({
     <div className="w-full">
       <div className="flex items-center py-4">
         <Input
-          placeholder="Buscar empleado por nombre"
+          placeholder="Buscar agresión por fecha"
           value={
-            (table.getColumn("fullName")?.getFilterValue() as string) ?? ""
+            (table.getColumn("fechaAgresion")?.getFilterValue() as string) ?? ""
           }
           onChange={(event) =>
-            table.getColumn("fullName")?.setFilterValue(event.target.value)
+            table.getColumn("fechaAgresion")?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
@@ -322,4 +257,4 @@ export function DataTableEmployee({
       </div>
     </div>
   );
-}
+};

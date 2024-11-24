@@ -7,7 +7,6 @@ import {
   Hospital,
   Map,
   PieChart,
-  Siren,
   Users,
 } from "lucide-react";
 
@@ -20,8 +19,6 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
@@ -111,19 +108,15 @@ export function SidenavAdmin({
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton size="lg" className="bg-white" asChild>
-              <Link href={"/dashboard"}>
-                <Image
-                  src="/img/logo-minsal.png"
-                  alt="logo"
-                  width={100}
-                  height={70}
-                />
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
+        <SidebarMenu className="text-center">
+          <Link href={"/dashboard"} className="flex justify-center">
+            <Image
+              src="/img/logo-minsal.png"
+              alt="logo"
+              width={160}
+              height={60}
+            />
+          </Link>
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>

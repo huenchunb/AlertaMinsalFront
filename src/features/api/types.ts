@@ -8,18 +8,18 @@ export interface PaginatedList<T> {
 }
 
 export interface LoginRequestBody {
-    email: string
-    password: string
+    email: string;
+    password: string;
 }
 
 export interface LookupDto {
-    id: number,
-    name: string
+    id: number;
+    name: string;
 }
 
 export interface RoleDto {
-    id: string,
-    name: string
+    id: string;
+    name: string;
 }
 
 export interface EmpleadoDto {
@@ -74,8 +74,12 @@ export interface GetDefaultsResponseDto {
     tipoAgresores: LookupDto[];
     tipoAgresiones: LookupDto[];
     tipoAgresionesCategorias: TipoAgresionCategoriaDto[];
-    empleados: EmpleadoDefaultDto[]
+    empleados: EmpleadoDefaultDto[];
     roles: RoleDto[];
+}
+
+export interface ApproveAggressionCommand {
+    id: number;
 }
 
 export interface CreateAgresionCommand {
@@ -154,4 +158,77 @@ export interface GetAggressionSummaryByDate {
     date: string;
     physicalAggressions: number;
     verbalAggressions: number;
+}
+
+export interface AggressionDto {
+    agresionId: number;
+    estadoAgresion: string;
+    fechaAgresion: string;
+    fechaAgresionNormalizada: string;
+    empleado: AgresionEmpleadoDto;
+    establecimiento: AgresionEstablecimientoDto;
+    creadoPor?: string;
+    actualizadoPor?: string;
+    fechaCreacion: Date;
+    fechaCreacionNormalizada: string;
+    fechaActualizacion: Date;
+    fechaActualizacionNormalizada: string;
+    tipoAgresion?: string;
+    categoriasAgresion: string[];
+    agresores: AgresionAgresorDto[];
+    testigos: AgresionTestigoDto[];
+}
+
+export interface AgresionEmpleadoDto {
+    id: number;
+    fullName: string;
+    rutNormalized: string;
+    email: string;
+    phoneNumber: number;
+    comuna: string;
+    region: string;
+}
+
+export interface AgresionEstablecimientoDto {
+    id: number;
+    name: string;
+    address: string;
+    comuna: string;
+    region: string;
+}
+
+export interface AgresionAgresorDto {
+    id: number;
+    comuna?: string;
+    digito?: string;
+    direccion?: string;
+    fullName?: string;
+    lastName?: string;
+    name?: string;
+    rut?: string;
+    rutNormalized?: string;
+}
+
+export interface AgresionTestigoDto {
+    digito: string;
+    email: string;
+    fullName: string;
+    id: number;
+    lastName: string;
+    name: string;
+    phoneNumber: number;
+    rut: string;
+    rutNormalized: string;
+}
+
+export interface EstablishmentSummaryDto {
+    name: string;
+    quantity: number;
+}
+
+export interface GetAggresionsSummaryResponseDto {
+    attacksReported: number;
+    approvedAttacks: number;
+    physicalEstablishment: EstablishmentSummaryDto;
+    verbalEstablishment: EstablishmentSummaryDto;
 }

@@ -127,20 +127,18 @@ export interface DataTableEstablishmentProps {
     data: EstablecimientoDto[];
     hasPreviousPage: boolean;
     hasNextPage: boolean;
-    handlePrevious: Function;
-    handleNextPage: Function;
+    handlePreviousAction: () => void;
+    handleNextPageAction: () => void;
     pageSize: number;
-    totalCounts: number;
 }
 
 export function DataTableEstablishment({
                                            data,
-                                           handlePrevious,
-                                           handleNextPage,
+                                           handlePreviousAction,
+                                           handleNextPageAction,
                                            hasNextPage,
                                            hasPreviousPage,
-                                           pageSize,
-                                           totalCounts
+                                           pageSize
                                        }: DataTableEstablishmentProps) {
 
     const [sorting, setSorting] = React.useState<SortingState>([])
@@ -272,7 +270,7 @@ export function DataTableEstablishment({
                     <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => handlePrevious()}
+                        onClick={() => handlePreviousAction()}
                         disabled={!hasPreviousPage}
                     >
                         Anterior
@@ -280,7 +278,7 @@ export function DataTableEstablishment({
                     <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => handleNextPage()}
+                        onClick={() => handleNextPageAction()}
                         disabled={!hasNextPage}
                     >
                         Siguiente

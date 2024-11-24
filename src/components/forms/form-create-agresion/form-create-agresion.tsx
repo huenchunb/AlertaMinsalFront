@@ -140,14 +140,7 @@ const FormCreateAgresion = () => {
       empleadoId: 0,
       tipoAgresionId: 0,
       categoriasAgresionesId: [],
-      agresores: [
-        {
-          name: undefined,
-          lastName: undefined,
-          address: undefined,
-          comunaId: undefined,
-        },
-      ],
+      agresores: [],
       testigos: [],
     },
   });

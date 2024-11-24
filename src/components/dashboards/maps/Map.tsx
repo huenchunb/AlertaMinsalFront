@@ -47,7 +47,7 @@ export const Map: React.FC<MapProps> = ({ data }) => {
     <MapContainer
       center={[-33.4829435561465, -70.6551455415621]}
       zoom={11}
-      className="w-full h-full rounded"
+      className="w-full h-full rounded-3xl shadow-sm border-0 bg-background"
     >
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

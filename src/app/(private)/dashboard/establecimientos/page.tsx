@@ -55,12 +55,11 @@ const EstablecimientoPage = () => {
             {data && (
               <DataTableEstablishment
                 data={data.items}
-                handlePrevious={handlePreviousPage}
-                handleNextPage={handleNextPage}
                 hasPreviousPage={data.hasPreviousPage}
                 hasNextPage={data.hasNextPage}
+                handlePreviousAction={handlePreviousPage}
+                handleNextPageAction={handleNextPage}
                 pageSize={pageSize}
-                totalCounts={data.totalCount}
               />
             )}
           </CardContent>
