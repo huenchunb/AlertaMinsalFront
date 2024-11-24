@@ -5,7 +5,6 @@ import storage from 'redux-persist/lib/storage';
 import {api} from '@/features/api';
 import {combineReducers} from 'redux';
 import {encryptTransform} from 'redux-persist-transform-encrypt';
-import configReducer from '@/features/config/slice';
 
 const encryptor = encryptTransform({
     secretKey: 'mi_clave_secreta_segura',
@@ -13,7 +12,6 @@ const encryptor = encryptTransform({
 
 const rootReducer = combineReducers({
     auth: authReducer,
-    config: configReducer,
     [api.reducerPath]: api.reducer,
 });
 
