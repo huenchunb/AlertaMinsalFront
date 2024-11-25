@@ -43,3 +43,6 @@ certificates
 
 .idea
 pnpm-lock.yaml
+
+.env.local
+.env.production

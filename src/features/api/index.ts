@@ -16,7 +16,7 @@ import {
 } from "@/features/api/types";
 
 const baseQuery = fetchBaseQuery({
-    baseUrl: "https://localhost:5001/api",
+    baseUrl: "https://alertaminsal.azurewebsites.net/api",
     credentials: "include",
 });
 
