@@ -1,4 +1,4 @@
-import {BaseQueryFn, createApi, FetchArgs, fetchBaseQuery, FetchBaseQueryError,} from '@reduxjs/toolkit/query/react';
+import {createApi, fetchBaseQuery,} from '@reduxjs/toolkit/query/react';
 
 import {
     AggressionDto,
@@ -30,70 +30,9 @@ const baseQuery = fetchBaseQuery({
     },
 });
 
-const baseQueryWithReauth: BaseQueryFn<
-    string | FetchArgs,
-    unknown,
-    FetchBaseQueryError
-> = async (args, api, extraOptions) => {
-    let result = await baseQuery(args, api, extraOptions);
-
-    if (result.error && result.error.status === 404) {
-        const refreshToken = Cookies.get('refreshToken');
-        if (refreshToken) {
-            const refreshResult = await baseQuery(
-                {
-                    url: '/Users/refresh',
-                    method: 'POST',
-                    body: {refreshToken},
-                },
-                api,
-                extraOptions
-            );
-
-            if (refreshResult.data) {
-                const data = refreshResult.data as LoginResponseBody;
-
-                Cookies.set('accessToken', data.accessToken, {expires: 1, path: '/'});
-                Cookies.set('refreshToken', data.refreshToken, {
-                    expires: 1,
-                    path: '/',
-                });
-
-                const newHeaders = new Headers();
-                newHeaders.set('Authorization', `Bearer ${data.accessToken}`);
-
-                const retryArgs = prepareRetryArgs(args, newHeaders);
-
-                result = await baseQuery(retryArgs, api, extraOptions);
-            } else {
-
-                Cookies.remove('accessToken', {path: '/'});
-                Cookies.remove('refreshToken', {path: '/'});
-            }
-        } else {
-            Cookies.remove('accessToken', {path: '/'});
-        }
-    }
-
-    return result;
-};
-
-
-const prepareRetryArgs = (
-    args: string | FetchArgs,
-    headers: Headers
-): FetchArgs => {
-    if (typeof args === 'string') {
-        return {url: args, headers};
-    } else {
-        return {...args, headers};
-    }
-};
-
-
 export const api = createApi({
     reducerPath: "api",
-    baseQuery: baseQueryWithReauth,
+    baseQuery: baseQuery,
     tagTypes: ["Empleados", "Defaults", "Establecimientos", "Aggressions"],
     endpoints: (builder) => ({
         login: builder.mutation<LoginResponseBody, LoginRequestBody>({
