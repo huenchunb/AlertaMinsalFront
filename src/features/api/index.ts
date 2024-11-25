@@ -6,15 +6,17 @@ import {
     AgresionGeoLocationDto,
     ApproveAggressionCommand,
     CreateAgresionCommand,
-    CreateEmpleadoRequestBody, CreateEstablishmentCommand,
+    CreateEmpleadoRequestBody,
+    CreateEstablishmentCommand,
     EmpleadoDto,
     EstablecimientoDto,
-    GetAggresionsSummaryResponseDto,
+    GetAggresionsSummaryResponseDto, GetAggressionsQuery,
     GetAggressionSummaryByDate,
-    GetDefaultsResponseDto,
+    GetDefaultsResponseDto, GetEmpleadoQuery,
     LoginRequestBody,
     LoginResponseBody,
     PaginatedList,
+    UserInfoResponse,
 } from "@/features/api/types";
 import Cookies from "js-cookie";
 
@@ -45,6 +47,12 @@ export const api = createApi({
         getUserRoles: builder.query<string[], void>({
             query: () => "/Identities/GetUserRoles",
         }),
+        getUserInfo: builder.query<UserInfoResponse, void>({
+            query: () => "/Users/manage/info",
+        }),
+        getUserByEmail: builder.query<EmpleadoDto, string>({
+            query: (email) => `/Empleados/email/${email}`,
+        }),
         getEstablecimientos: builder.query<
             PaginatedList<EstablecimientoDto>,
             {
@@ -58,10 +66,10 @@ export const api = createApi({
         }),
         getEmpleados: builder.query<
             PaginatedList<EmpleadoDto>,
-            { pageNumber: number; pageSize: number }
+            GetEmpleadoQuery
         >({
-            query: ({pageNumber, pageSize}) =>
-                `/Empleados?pageNumber=${pageNumber}&pageSize=${pageSize}`,
+            query: ({pageNumber, pageSize, establecimientoId}) =>
+                `/Empleados?pageNumber=${pageNumber}&pageSize=${pageSize}&establecimientoId=${establecimientoId}`,
             providesTags: ["Empleados"],
         }),
         getDefaults: builder.query<GetDefaultsResponseDto, void>({
@@ -85,10 +93,10 @@ export const api = createApi({
         }),
         getAggressions: builder.query<
             PaginatedList<AggressionDto>,
-            { pageNumber: number; pageSize: number }
+            GetAggressionsQuery
         >({
-            query: ({pageNumber, pageSize}) =>
-                `/Agresiones?pageNumber=${pageNumber}&pageSize=${pageSize}`,
+            query: ({pageNumber, pageSize, establecimientoId}) =>
+                `/Agresiones?pageNumber=${pageNumber}&pageSize=${pageSize}&establecimientoId=${establecimientoId}`,
             providesTags: ["Aggressions"]
         }),
         GetAggressionsSummary: builder.query<GetAggresionsSummaryResponseDto, void>(
@@ -134,6 +142,7 @@ export const api = createApi({
 export const {
     useLoginMutation,
     useGetUserRolesQuery,
+    useGetUserInfoQuery,
     useGetEmpleadosQuery,
     useCreateEmpleadosMutation,
     useGetDefaultsQuery,
@@ -145,5 +154,6 @@ export const {
     useGetAggressionsQuery,
     useGetAggressionsSummaryQuery,
     useApproveAggressionMutation,
-    useCreateEstablecimientoMutation
+    useCreateEstablecimientoMutation,
+    useGetUserByEmailQuery
 } = api;

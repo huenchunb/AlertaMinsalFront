@@ -43,6 +43,7 @@ export interface EmpleadoDto {
     mutualidad: string;
     estamento: string;
     establecimiento: string;
+    establecimientoId: number;
 }
 
 export interface CreateEmpleadoRequestBody {
@@ -261,4 +262,21 @@ export interface CreateEstablishmentCommand {
     complejidadEstablecimientoId: number;
     tipoAtencionEstablecimientoId: number;
     comunaId: number;
+}
+
+export interface UserInfoResponse {
+    email: string,
+    isEmailConfirmed: boolean;
+}
+
+export interface GetEmpleadoQuery {
+    pageNumber: number;
+    pageSize: number;
+    establecimientoId: number | null | undefined;
+}
+
+export interface GetAggressionsQuery {
+    pageNumber: number;
+    pageSize: number;
+    establecimientoId: number | null | undefined;
 }
