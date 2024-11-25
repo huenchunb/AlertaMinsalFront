@@ -2,31 +2,29 @@
 
 import {LogOut, MenuIcon} from "lucide-react";
 
-import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import {Avatar, AvatarFallback} from "@/components/ui/avatar";
+import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,} from "@/components/ui/dropdown-menu";
 import {SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar,} from "@/components/ui/sidebar";
 import {useRouter} from "next/navigation";
 import Cookies from "js-cookie";
+import {useGetUserByEmailQuery, useGetUserInfoQuery} from "@/features/api";
+import {useAppSelector} from "@/store/hooks";
 
-export function NavUser({
-                            user,
-                        }: {
-    user: {
-        name: string;
-        email: string;
-        avatar: string;
-    };
-}) {
+export function NavUser() {
+    const {data} = useGetUserInfoQuery(undefined, {
+        refetchOnMountOrArgChange: true,
+        refetchOnFocus: true,
+        refetchOnReconnect: true
+    });
+    const {roles} = useAppSelector(state => state.auth)
     const {isMobile} = useSidebar();
-
     const router = useRouter();
+    const {data: dataUser} = useGetUserByEmailQuery(data?.email ?? "", {
+        refetchOnMountOrArgChange: true,
+        refetchOnFocus: true,
+        refetchOnReconnect: true
+    })
+
     const handleClick = async () => {
         Cookies.remove('accessToken', {path: '/'});
         router.push("/login");
@@ -41,14 +39,19 @@ export function NavUser({
                             size="lg"
                             className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                         >
-                            <Avatar className="h-8 w-8 rounded-lg">
-                                <AvatarImage src={user.avatar} alt={user.name}/>
-                                <AvatarFallback className="rounded-lg">AM</AvatarFallback>
-                            </Avatar>
-                            <div className="grid flex-1 text-left text-sm leading-tight">
-                                <span className="truncate font-semibold">{user.name}</span>
-                                <span className="truncate text-xs">{user.email}</span>
-                            </div>
+                            {data && (
+                                <>
+                                    <Avatar className="h-8 w-8 rounded-lg">
+                                        <AvatarFallback
+                                            className="rounded-lg uppercase">{dataUser ? dataUser.fullName.substring(0, 2) : data.email.substring(0, 2)}</AvatarFallback>
+                                    </Avatar>
+                                    <div className="grid flex-1 text-left text-sm leading-tight">
+                                        <span
+                                            className="truncate font-semibold capitalize">{dataUser ? dataUser.fullName : roles[0]}</span>
+                                        <span className="truncate text-xs lowercase">{data.email}</span>
+                                    </div>
+                                </>
+                            )}
                             <MenuIcon className="ml-auto size-4"/>
                         </SidebarMenuButton>
                     </DropdownMenuTrigger>
@@ -58,19 +61,6 @@ export function NavUser({
                         align="end"
                         sideOffset={4}
                     >
-                        <DropdownMenuLabel className="p-0 font-normal">
-                            <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                                <Avatar className="h-8 w-8 rounded-lg">
-                                    <AvatarImage src={user.avatar} alt={user.name}/>
-                                    <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-                                </Avatar>
-                                <div className="grid flex-1 text-left text-sm leading-tight">
-                                    <span className="truncate font-semibold">{user.name}</span>
-                                    <span className="truncate text-xs">{user.email}</span>
-                                </div>
-                            </div>
-                        </DropdownMenuLabel>
-                        <DropdownMenuSeparator/>
                         <DropdownMenuItem onClick={handleClick}>
                             <LogOut/>
                             Cerrar sesión

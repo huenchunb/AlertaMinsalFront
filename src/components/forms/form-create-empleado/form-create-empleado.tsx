@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {z} from "zod";
 import {isValidRUT} from "@/utils/functions";
 import {Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage} from "@/components/ui/form";
@@ -6,8 +6,13 @@ import {useForm} from "react-hook-form";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {Input} from "@/components/ui/input";
 import {Button} from "@/components/ui/button";
-import {useCreateEmpleadosMutation, useGetDefaultsQuery} from "@/features/api";
-import {CreateEmpleadoRequestBody} from "@/features/api/types";
+import {
+    useCreateEmpleadosMutation,
+    useGetDefaultsQuery,
+    useGetUserByEmailQuery,
+    useGetUserInfoQuery
+} from "@/features/api";
+import {CreateEmpleadoRequestBody, LookupDto} from "@/features/api/types";
 import {Spinner} from "@/components/ui/spinner";
 import {InputRut} from "@/components/ui/input-rut";
 import {Alert} from "@/components/ui/alert";
@@ -33,11 +38,37 @@ export const formCreateEmpleadoSchema = z.object({
 })
 
 const FormCreateEmpleado = () => {
+    const [filteredEstablecimientos, setFilteredEstablecimientos] = useState<LookupDto[]>([]);
+
     const {data, isLoading: isLoadingDefaults} = useGetDefaultsQuery(undefined, {
         refetchOnMountOrArgChange: true,
         refetchOnReconnect: true,
         refetchOnFocus: true,
     });
+
+    const {data: userInfo} = useGetUserInfoQuery(undefined, {
+        refetchOnMountOrArgChange: true,
+        refetchOnFocus: true,
+        refetchOnReconnect: true
+    });
+
+    const {data: user} = useGetUserByEmailQuery(userInfo?.email ?? "", {
+        refetchOnMountOrArgChange: true,
+        refetchOnFocus: true,
+        refetchOnReconnect: true
+    })
+
+    useEffect(() => {
+        if (data) {
+            if (user) {
+                setFilteredEstablecimientos(data.establecimientos.filter(x => x.id === user.establecimientoId));
+            } else {
+                setFilteredEstablecimientos(data.establecimientos);
+            }
+        }else{
+            setFilteredEstablecimientos([]);
+        }
+    }, [data, user]);
 
     const form = useForm<z.infer<typeof formCreateEmpleadoSchema>>({
         resolver: zodResolver(formCreateEmpleadoSchema),
@@ -366,7 +397,7 @@ const FormCreateEmpleado = () => {
                                                     </SelectTrigger>
                                                 </FormControl>
                                                 <SelectContent>
-                                                    {data.establecimientos.map((establecimiento) => (
+                                                    {filteredEstablecimientos.map((establecimiento) => (
                                                         <SelectItem key={establecimiento.id}
                                                                     value={establecimiento.id.toString()}>
                                                             {establecimiento.name}
