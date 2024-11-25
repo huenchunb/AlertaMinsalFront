@@ -6,7 +6,8 @@ import {
     AgresionGeoLocationDto,
     ApproveAggressionCommand,
     CreateAgresionCommand,
-    CreateEmpleadoRequestBody, CreateEstablishmentCommand,
+    CreateEmpleadoRequestBody,
+    CreateEstablishmentCommand,
     EmpleadoDto,
     EstablecimientoDto,
     GetAggresionsSummaryResponseDto,
@@ -15,6 +16,7 @@ import {
     LoginRequestBody,
     LoginResponseBody,
     PaginatedList,
+    UserInfoResponse,
 } from "@/features/api/types";
 import Cookies from "js-cookie";
 
@@ -44,6 +46,9 @@ export const api = createApi({
         }),
         getUserRoles: builder.query<string[], void>({
             query: () => "/Identities/GetUserRoles",
+        }),
+        getUserInfo: builder.query<UserInfoResponse, void>({
+            query: () => "/Users/manage/info",
         }),
         getEstablecimientos: builder.query<
             PaginatedList<EstablecimientoDto>,
@@ -134,6 +139,7 @@ export const api = createApi({
 export const {
     useLoginMutation,
     useGetUserRolesQuery,
+    useGetUserInfoQuery,
     useGetEmpleadosQuery,
     useCreateEmpleadosMutation,
     useGetDefaultsQuery,

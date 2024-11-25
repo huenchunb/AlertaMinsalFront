@@ -100,6 +100,59 @@ const data = {
   ],
 };
 
+const dataJefatura = {
+    navMain: [
+        {
+            title: "Empleados",
+            url: "#",
+            icon: Users,
+            isActive: true,
+            items: [
+                {
+                    title: "Ver listado",
+                    url: "/dashboard/empleados",
+                },
+                {
+                    title: "Crear",
+                    url: "/dashboard/empleados/crear",
+                },
+            ],
+        },
+        {
+            title: "Agresiones",
+            url: "/dashboard/agresiones",
+            icon: ClipboardList,
+            items: [
+                {
+                    title: "Ver listado",
+                    url: "/dashboard/agresiones",
+                },
+                {
+                    title: "Reportar agresión",
+                    url: "/dashboard/agresiones/crear",
+                },
+            ],
+        },
+    ],
+    projects: [
+        {
+            name: "Design Engineering",
+            url: "#",
+            icon: Frame,
+        },
+        {
+            name: "Sales & Marketing",
+            url: "#",
+            icon: PieChart,
+        },
+        {
+            name: "Travel",
+            url: "#",
+            icon: Map,
+        },
+    ],
+};
+
 export function SidenavAdmin({
   ...props
 }: React.ComponentProps<typeof Sidebar>) {
@@ -121,7 +174,7 @@ export function SidenavAdmin({
       </SidebarHeader>
       <SidebarContent>
         {isAdministrator && <NavMain items={data.navMain} />}
-        {isJefatura && <div>Menu de navegación jefatura</div>}
+        {isJefatura && <NavMain items={dataJefatura.navMain} />}
       </SidebarContent>
       <SidebarFooter>
         <NavUser user={data.user} />

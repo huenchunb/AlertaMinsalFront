@@ -262,3 +262,8 @@ export interface CreateEstablishmentCommand {
     tipoAtencionEstablecimientoId: number;
     comunaId: number;
 }
+
+export interface UserInfoResponse {
+    email: string,
+    isEmailConfirmed: boolean;
+}
