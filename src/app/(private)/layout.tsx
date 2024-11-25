@@ -61,7 +61,9 @@ export default function LayoutDashboard({
             </Breadcrumb>
           </div>
         </header>
-        {children}
+        <main className="w-full">
+          {children}
+        </main>
       </SidebarInset>
     </SidebarProvider>
   );

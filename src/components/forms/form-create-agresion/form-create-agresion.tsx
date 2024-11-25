@@ -282,7 +282,6 @@ const FormCreateAgresion = () => {
       })
       .catch(() => {
         toast({
-          title: "You submitted the following values:",
           description: (
             <Alert className="border border-red-600 bg-red-100">
               <div className="flex start">
