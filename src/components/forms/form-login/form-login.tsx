@@ -41,8 +41,10 @@ const FormLogin = () => {
         loginTrigger({email: values.email, password: values.password})
             .unwrap()
             .then((response) => {
-                Cookies.set('accessToken', response.accessToken, { expires: 1, path: '/' }); // 'expires' en días
-                router.push('/dashboard');
+                Cookies.set('accessToken', response.accessToken, {expires: 1, path: '/'}); // 'expires' en días
+                setTimeout(() => {
+                    router.push('/dashboard');
+                }, 3000);
             })
             .catch((error) => {
                 if (error && error.status === 401) {
