@@ -69,11 +69,9 @@ const baseQueryWithReauth: BaseQueryFn<
 
                 Cookies.remove('accessToken', {path: '/'});
                 Cookies.remove('refreshToken', {path: '/'});
-                window.location.href = '/login';
             }
         } else {
             Cookies.remove('accessToken', {path: '/'});
-            window.location.href = '/login';
         }
     }
 
