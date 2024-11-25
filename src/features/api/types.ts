@@ -12,6 +12,13 @@ export interface LoginRequestBody {
     password: string;
 }
 
+export interface LoginResponseBody {
+    tokenType: string;
+    accessToken: string;
+    expiresIn: string;
+    refreshToken: string;
+}
+
 export interface LookupDto {
     id: number;
     name: string;
