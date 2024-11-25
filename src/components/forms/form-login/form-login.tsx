@@ -11,6 +11,7 @@ import {useRouter} from "next/navigation";
 import {useLoginMutation} from "@/features/api";
 import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert"
 import {Spinner} from "@/components/ui/spinner";
+import Cookies from "js-cookie";
 
 export const formLoginSchema = z.object({
     email: z.string({required_error: "Ingresa un correo electrónico"}).email({message: "El correo electrónico no es válido"}),
@@ -39,7 +40,10 @@ const FormLogin = () => {
         setInvalidCredentials(false);
         loginTrigger({email: values.email, password: values.password})
             .unwrap()
-            .then(() => router.push("/dashboard"))
+            .then((response) => {
+                Cookies.set('accessToken', response.accessToken, { expires: 1, path: '/' }); // 'expires' en días
+                router.push('/dashboard');
+            })
             .catch((error) => {
                 if (error && error.status === 401) {
                     setInvalidCredentials(true);

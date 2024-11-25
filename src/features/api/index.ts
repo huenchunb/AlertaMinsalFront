@@ -1,4 +1,5 @@
-import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/query/react";
+import {BaseQueryFn, createApi, FetchArgs, fetchBaseQuery, FetchBaseQueryError,} from '@reduxjs/toolkit/query/react';
+
 import {
     AggressionDto,
     AgresionesCountByCategories,
@@ -12,22 +13,94 @@ import {
     GetAggressionSummaryByDate,
     GetDefaultsResponseDto,
     LoginRequestBody,
+    LoginResponseBody,
     PaginatedList,
 } from "@/features/api/types";
+import Cookies from "js-cookie";
 
 const baseQuery = fetchBaseQuery({
-    baseUrl: "https://alertaminsal.azurewebsites.net/api",
-    credentials: "include",
+    //baseUrl: "https://alertaminsal.azurewebsites.net/api",
+    baseUrl: "https://localhost:5001/api",
+    prepareHeaders: (headers) => {
+        const token = Cookies.get('accessToken');
+        if (token) {
+            headers.set('Authorization', `Bearer ${token}`);
+        }
+        return headers;
+    },
 });
+
+const baseQueryWithReauth: BaseQueryFn<
+    string | FetchArgs,
+    unknown,
+    FetchBaseQueryError
+> = async (args, api, extraOptions) => {
+    let result = await baseQuery(args, api, extraOptions);
+
+    if (result.error && result.error.status === 404) {
+        const refreshToken = Cookies.get('refreshToken');
+        if (refreshToken) {
+            const refreshResult = await baseQuery(
+                {
+                    url: '/Users/refresh',
+                    method: 'POST',
+                    body: {refreshToken},
+                },
+                api,
+                extraOptions
+            );
+
+            if (refreshResult.data) {
+                const data = refreshResult.data as LoginResponseBody;
+
+                Cookies.set('accessToken', data.accessToken, {expires: 1, path: '/'});
+                Cookies.set('refreshToken', data.refreshToken, {
+                    expires: 1,
+                    path: '/',
+                });
+
+                const newHeaders = new Headers();
+                newHeaders.set('Authorization', `Bearer ${data.accessToken}`);
+
+                const retryArgs = prepareRetryArgs(args, newHeaders);
+
+                result = await baseQuery(retryArgs, api, extraOptions);
+            } else {
+
+                Cookies.remove('accessToken', {path: '/'});
+                Cookies.remove('refreshToken', {path: '/'});
+                window.location.href = '/login';
+            }
+        } else {
+            Cookies.remove('accessToken', {path: '/'});
+            window.location.href = '/login';
+        }
+    }
+
+    return result;
+};
+
+
+const prepareRetryArgs = (
+    args: string | FetchArgs,
+    headers: Headers
+): FetchArgs => {
+    if (typeof args === 'string') {
+        return {url: args, headers};
+    } else {
+        return {...args, headers};
+    }
+};
+
 
 export const api = createApi({
     reducerPath: "api",
-    baseQuery: baseQuery,
+    baseQuery: baseQueryWithReauth,
     tagTypes: ["Empleados", "Defaults", "Establecimientos", "Aggressions"],
     endpoints: (builder) => ({
-        login: builder.mutation<void, LoginRequestBody>({
+        login: builder.mutation<LoginResponseBody, LoginRequestBody>({
             query: (credentials) => ({
-                url: "/Users/login?useCookies=true&useSessionCookies=true",
+                url: "/Users/login",
                 method: "POST",
                 body: credentials,
             }),
