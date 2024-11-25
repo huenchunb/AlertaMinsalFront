@@ -6,7 +6,7 @@ import {
     AgresionGeoLocationDto,
     ApproveAggressionCommand,
     CreateAgresionCommand,
-    CreateEmpleadoRequestBody,
+    CreateEmpleadoRequestBody, CreateEstablishmentCommand,
     EmpleadoDto,
     EstablecimientoDto,
     GetAggresionsSummaryResponseDto,
@@ -19,8 +19,8 @@ import {
 import Cookies from "js-cookie";
 
 const baseQuery = fetchBaseQuery({
-    baseUrl: "https://alertaminsal.azurewebsites.net/api",
-    //baseUrl: "https://localhost:5001/api",
+    //baseUrl: "https://alertaminsal.azurewebsites.net/api",
+    baseUrl: "https://localhost:5001/api",
     prepareHeaders: (headers) => {
         const token = Cookies.get('accessToken');
         if (token) {
@@ -112,6 +112,14 @@ export const api = createApi({
                 invalidatesTags: ["Aggressions"],
             }),
         }),
+        createEstablecimiento: builder.mutation<void, CreateEstablishmentCommand>({
+            query: (body) => ({
+                url: "/Establecimientos",
+                method: "POST",
+                body: body,
+                invalidatesTags: ["Establecimientos"],
+            }),
+        }),
         approveAggression: builder.mutation<void, ApproveAggressionCommand>({
             query: (body) => ({
                 url: `/Agresiones/${body.id}`,
@@ -137,4 +145,5 @@ export const {
     useGetAggressionsQuery,
     useGetAggressionsSummaryQuery,
     useApproveAggressionMutation,
+    useCreateEstablecimientoMutation
 } = api;

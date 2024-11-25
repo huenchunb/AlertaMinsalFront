@@ -80,6 +80,11 @@ export interface GetDefaultsResponseDto {
     comunas: LookupDto[];
     tipoAgresores: LookupDto[];
     tipoAgresiones: LookupDto[];
+    tipoEstablecimiento: LookupDto[];
+    nivelEstablecimiento: LookupDto[];
+    complejidadesEstablecimiento: LookupDto[];
+    tipoAtencionEstablecimiento: LookupDto[];
+    tipoUrgenciaEstablecimiento: LookupDto[];
     tipoAgresionesCategorias: TipoAgresionCategoriaDto[];
     empleados: EmpleadoDefaultDto[];
     roles: RoleDto[];
@@ -238,4 +243,22 @@ export interface GetAggresionsSummaryResponseDto {
     approvedAttacks: number;
     physicalEstablishment: EstablishmentSummaryDto;
     verbalEstablishment: EstablishmentSummaryDto;
+}
+
+
+export interface CreateEstablishmentCommand {
+    code: number;
+    name: string;
+    tipoEstablecimientoId: number;
+    nivelEstablecimientoId: number;
+    address: string;
+    streetNumber: string;
+    phoneNumber: number;
+    urgency: boolean;
+    tipoUrgenciaEstablecimientoId: number;
+    longitude: number;
+    latitude: number;
+    complejidadEstablecimientoId: number;
+    tipoAtencionEstablecimientoId: number;
+    comunaId: number;
 }
