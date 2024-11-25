@@ -3,23 +3,28 @@
 import {LogOut, MenuIcon} from "lucide-react";
 
 import {Avatar, AvatarFallback} from "@/components/ui/avatar";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,} from "@/components/ui/dropdown-menu";
 import {SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar,} from "@/components/ui/sidebar";
 import {useRouter} from "next/navigation";
 import Cookies from "js-cookie";
-import {useGetUserInfoQuery} from "@/features/api";
+import {useGetUserByEmailQuery, useGetUserInfoQuery} from "@/features/api";
 import {useAppSelector} from "@/store/hooks";
 
 export function NavUser() {
-    const {data} = useGetUserInfoQuery();
+    const {data} = useGetUserInfoQuery(undefined, {
+        refetchOnMountOrArgChange: true,
+        refetchOnFocus: true,
+        refetchOnReconnect: true
+    });
     const {roles} = useAppSelector(state => state.auth)
     const {isMobile} = useSidebar();
     const router = useRouter();
+    const {data: dataUser} = useGetUserByEmailQuery(data?.email ?? "", {
+        refetchOnMountOrArgChange: true,
+        refetchOnFocus: true,
+        refetchOnReconnect: true
+    })
+
     const handleClick = async () => {
         Cookies.remove('accessToken', {path: '/'});
         router.push("/login");
@@ -38,11 +43,12 @@ export function NavUser() {
                                 <>
                                     <Avatar className="h-8 w-8 rounded-lg">
                                         <AvatarFallback
-                                            className="rounded-lg uppercase">{data.email.substring(0, 2)}</AvatarFallback>
+                                            className="rounded-lg uppercase">{dataUser ? dataUser.fullName.substring(0, 2) : data.email.substring(0, 2)}</AvatarFallback>
                                     </Avatar>
                                     <div className="grid flex-1 text-left text-sm leading-tight">
-                                        <span className="truncate font-semibold">{roles[0]}</span>
-                                        <span className="truncate text-xs">{data.email}</span>
+                                        <span
+                                            className="truncate font-semibold capitalize">{dataUser ? dataUser.fullName : roles[0]}</span>
+                                        <span className="truncate text-xs lowercase">{data.email}</span>
                                     </div>
                                 </>
                             )}

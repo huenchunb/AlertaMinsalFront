@@ -25,11 +25,11 @@ export const Map: React.FC<MapProps> = ({ data }) => {
 
   const getColor = (quantity: number) => {
     return quantity >= 20
-      ? "red"
-      : quantity < 20 && quantity >= 10
       ? "#FF0000"
+      : quantity < 20 && quantity >= 10
+      ? "#FFFF30"
       : quantity > 5
-      ? "#FFD000"
+      ? "#F0D000"
       : "#65A653";
   };
 

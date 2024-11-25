@@ -177,7 +177,7 @@ export function SidenavAdmin({
         {isJefatura && <NavMain items={dataJefatura.navMain} />}
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

@@ -1,21 +1,42 @@
 "use client";
 
 import {Card, CardContent, CardDescription, CardHeader, CardTitle,} from "@/components/ui/card";
-import {api, useApproveAggressionMutation, useGetAggressionsQuery} from "@/features/api";
+import {
+    api,
+    useApproveAggressionMutation,
+    useGetAggressionsQuery,
+    useGetUserByEmailQuery,
+    useGetUserInfoQuery
+} from "@/features/api";
 import {Separator} from "@radix-ui/react-separator";
 import React, {useState} from "react";
 import {ChevronsUpDown, CircleCheckBig, CircleX, FileText, Users} from "lucide-react";
 import {Collapsible, CollapsibleContent, CollapsibleTrigger} from "@/components/ui/collapsible";
 import {Button} from "@/components/ui/button";
-import {ApproveAggressionCommand} from "@/features/api/types";
+import {ApproveAggressionCommand, GetAggressionsQuery} from "@/features/api/types";
 import {toast} from "@/hooks/use-toast";
 import {Alert} from "@/components/ui/alert";
-import {useAppDispatch} from "@/store/hooks";
+import {useAppDispatch, useAppSelector} from "@/store/hooks";
 
 const AgresionesPage = () => {
     const dispatch = useAppDispatch();
     const [pageNumber, setPageNumber] = useState(1);
     const pageSize = 15;
+
+    const {isAdministrator} = useAppSelector(state => state.auth)
+
+    const {data: userInfo} = useGetUserInfoQuery(undefined, {
+        refetchOnMountOrArgChange: true,
+        refetchOnFocus: true,
+        refetchOnReconnect: true
+    });
+
+    const {data: user} = useGetUserByEmailQuery(userInfo?.email ?? "",
+        {
+            refetchOnMountOrArgChange: true,
+            refetchOnFocus: true,
+            refetchOnReconnect: true
+        })
 
     const handleNextPage = () => {
         if (data && data.hasNextPage) {
@@ -29,8 +50,14 @@ const AgresionesPage = () => {
         }
     };
 
+    const body: GetAggressionsQuery = {
+        pageSize: pageSize,
+        pageNumber: pageNumber,
+        establecimientoId: user?.establecimientoId
+    }
+
     const {data} = useGetAggressionsQuery(
-        {pageNumber, pageSize},
+        body,
         {
             refetchOnFocus: true,
             refetchOnReconnect: true,
@@ -136,14 +163,16 @@ const AgresionesPage = () => {
                                                     <p className="text-sm capitalize">{aggression.fechaActualizacionNormalizada}</p>
                                                 </div>
                                             </div>
-                                            <div className="flex grow items-center">
-                                                <Button
-                                                    onClick={() => handleApproveAggression(aggression.agresionId)}
-                                                    disabled={aggression.estadoAgresion === "Aprobada"}
-                                                >
-                                                    Aprobar
-                                                </Button>
-                                            </div>
+                                            {isAdministrator && (
+                                                <div className="flex grow items-center">
+                                                    <Button
+                                                        onClick={() => handleApproveAggression(aggression.agresionId)}
+                                                        disabled={aggression.estadoAgresion === "Aprobada"}
+                                                    >
+                                                        Aprobar
+                                                    </Button>
+                                                </div>
+                                            )}
                                             <div className="p-4">
                                                 <CollapsibleTrigger asChild>
                                                     <Button variant="secondary" size="sm">
@@ -251,7 +280,6 @@ const AgresionesPage = () => {
                             </div>
                         </>
                     )}
-
                 </CardContent>
             </Card>
         </div>

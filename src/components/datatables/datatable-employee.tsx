@@ -22,7 +22,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
@@ -123,7 +122,7 @@ export const columns: ColumnDef<EmpleadoDto>[] = [
       );
     },
     cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("comuna")}</div>
+      <div ><span className="capitalize">{row.getValue("comuna")}</span></div>
     ),
   },
   {
@@ -142,8 +141,6 @@ export const columns: ColumnDef<EmpleadoDto>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-            <DropdownMenuItem>Ver más información</DropdownMenuItem>
-            <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() =>
                 navigator.clipboard.writeText(employeeDto.id.toString())
