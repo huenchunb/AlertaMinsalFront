@@ -24,8 +24,14 @@ const authSlice = createSlice({
       state.isJefatura = action.payload.includes("Jefatura");
       state.isAuthenticated = true;
     },
+    setLogout: (state) =>{
+      state.isAdministrator = false;
+      state.isJefatura = false;
+      state.isAuthenticated = false;
+      state.roles = []
+    }
   },
 });
 
-export const { setRol } = authSlice.actions;
+export const { setRol, setLogout } = authSlice.actions;
 export default authSlice.reducer;

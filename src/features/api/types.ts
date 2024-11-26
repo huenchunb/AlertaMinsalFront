@@ -272,11 +272,11 @@ export interface UserInfoResponse {
 export interface GetEmpleadoQuery {
     pageNumber: number;
     pageSize: number;
-    establecimientoId: number | null | undefined;
+    establecimientoId?: number | null | undefined;
 }
 
 export interface GetAggressionsQuery {
     pageNumber: number;
     pageSize: number;
-    establecimientoId: number | null | undefined;
+    establecimientoId?: number | null | undefined;
 }
