@@ -45,8 +45,8 @@ export const Map: React.FC<MapProps> = ({ data }) => {
 
   return (
     <MapContainer
-      center={[-33.4829435561465, -70.6551455415621]}
-      zoom={11}
+      center={[-33.325351624139074, -70.83473634739211]}
+      zoom={9}
       className="w-full h-full rounded-3xl shadow-sm border-0 bg-background"
     >
       <TileLayer

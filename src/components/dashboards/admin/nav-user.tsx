@@ -8,9 +8,11 @@ import {SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar,} from "@/co
 import {useRouter} from "next/navigation";
 import Cookies from "js-cookie";
 import {useGetUserByEmailQuery, useGetUserInfoQuery} from "@/features/api";
-import {useAppSelector} from "@/store/hooks";
+import {useAppDispatch, useAppSelector} from "@/store/hooks";
+import {setLogout} from "@/features/auth/slice";
 
 export function NavUser() {
+    const dispatch = useAppDispatch();
     const {data} = useGetUserInfoQuery(undefined, {
         refetchOnMountOrArgChange: true,
         refetchOnFocus: true,
@@ -27,6 +29,7 @@ export function NavUser() {
 
     const handleClick = async () => {
         Cookies.remove('accessToken', {path: '/'});
+        dispatch(setLogout())
         router.push("/login");
     };
 

@@ -42,9 +42,7 @@ const FormLogin = () => {
             .unwrap()
             .then((response) => {
                 Cookies.set('accessToken', response.accessToken, {expires: 1, path: '/'}); // 'expires' en días
-                setTimeout(() => {
-                    router.push('/dashboard');
-                }, 3000);
+                router.push('/dashboard');
             })
             .catch((error) => {
                 if (error && error.status === 401) {
