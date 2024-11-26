@@ -21,8 +21,8 @@ import {
 import Cookies from "js-cookie";
 
 const baseQuery = fetchBaseQuery({
-    baseUrl: "https://alertaminsal.azurewebsites.net/api",
-    //baseUrl: "https://localhost:5001/api",
+    //baseUrl: "https://alertaminsal.azurewebsites.net/api",
+    baseUrl: "https://localhost:5001/api",
     prepareHeaders: (headers) => {
         const token = Cookies.get('accessToken');
         if (token) {
@@ -69,7 +69,7 @@ export const api = createApi({
             GetEmpleadoQuery
         >({
             query: ({pageNumber, pageSize, establecimientoId}) =>
-                `/Empleados?pageNumber=${pageNumber}&pageSize=${pageSize}&establecimientoId=${establecimientoId}`,
+                `/Empleados?pageNumber=${pageNumber}&pageSize=${pageSize}${establecimientoId ? `&establecimientoId=${establecimientoId}` : ``}`,
             providesTags: ["Empleados"],
         }),
         getDefaults: builder.query<GetDefaultsResponseDto, void>({
@@ -96,7 +96,7 @@ export const api = createApi({
             GetAggressionsQuery
         >({
             query: ({pageNumber, pageSize, establecimientoId}) =>
-                `/Agresiones?pageNumber=${pageNumber}&pageSize=${pageSize}&establecimientoId=${establecimientoId}`,
+                `/Agresiones?pageNumber=${pageNumber}&pageSize=${pageSize}${establecimientoId ? `&establecimientoId=${establecimientoId}` : ``}`,
             providesTags: ["Aggressions"]
         }),
         GetAggressionsSummary: builder.query<GetAggresionsSummaryResponseDto, void>(

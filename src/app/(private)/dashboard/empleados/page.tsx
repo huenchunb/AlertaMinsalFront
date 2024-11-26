@@ -20,7 +20,7 @@ const EmpleadosPage = () => {
         refetchOnReconnect: true
     });
 
-    const {data: user} = useGetUserByEmailQuery(userInfo?.email ?? "",
+    const {data: user, error: errorUser} = useGetUserByEmailQuery(userInfo?.email ?? "",
         {
             refetchOnMountOrArgChange: true,
             refetchOnFocus: true,
@@ -41,10 +41,14 @@ const EmpleadosPage = () => {
         }
     };
 
+
     const body: GetEmpleadoQuery = {
         pageSize: pageSize,
         pageNumber: pageNumber,
-        establecimientoId: user?.establecimientoId
+    }
+
+    if (!errorUser && user && user.establecimientoId) {
+        body.establecimientoId = user.establecimientoId;
     }
 
     const {data} = useGetEmpleadosQuery(
