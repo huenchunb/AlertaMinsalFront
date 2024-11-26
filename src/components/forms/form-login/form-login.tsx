@@ -55,7 +55,7 @@ const FormLogin = () => {
 
     return (
         <Form {...form}>
-            <form onSubmit={handleSubmit(handleLogin)} className="flex flex-col w-full gap-4">
+            <form onSubmit={handleSubmit(handleLogin)} className="flex flex-col w-full gap-4 bg-white">
                 <FormField
                     control={control}
                     name="email"
