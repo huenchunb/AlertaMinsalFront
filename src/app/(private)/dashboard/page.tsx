@@ -8,6 +8,8 @@ import ChartAggressionByCategory from "@/components/charts/chart-aggression-by-c
 import {Card} from "@/components/ui/card";
 import millify from "millify";
 import {Spinner} from "@/components/ui/spinner";
+import {useGetUserRoleHook} from "@/components/hooks/get-user-role";
+import DashboardEmpleado from "@/components/dashboards/empleado/dashboard-empleado";
 
 const DashboardPage = () => {
     const {
@@ -16,9 +18,9 @@ const DashboardPage = () => {
         dataByDate,
         dataAggressionSummary,
         isLoadingGeoLocation,
-        isFetchingRoles,
-        roles
     } = useDashboardHook();
+
+    const {isFetchingRoles, roles} = useGetUserRoleHook();
 
     return (
         <>
@@ -105,6 +107,9 @@ const DashboardPage = () => {
                         </div>
                         <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min z-0"></div>
                     </div>
+                )}
+                {!isFetchingRoles && roles && roles.includes("Empleado") && (
+                    <DashboardEmpleado />
                 )}
             </div>
         </>

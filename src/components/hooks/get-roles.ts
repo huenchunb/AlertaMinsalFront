@@ -3,15 +3,9 @@ import {
     useGetAggressionSummaryByDateQuery,
     useGetAgresionesCountByCategoriesQuery,
     useGetAgresionGeoLocationQuery,
-    useGetUserRolesQuery,
 } from "@/features/api";
 
 export const useDashboardHook = () => {
-    const {data: roles, isFetching: isFetchingRoles} = useGetUserRolesQuery(undefined, {
-        refetchOnMountOrArgChange: true,
-        refetchOnReconnect: true,
-        refetchOnFocus: true,
-    });
 
     const {data: dataGeoLocation, isLoading: isLoadingGeoLocation} =
         useGetAgresionGeoLocationQuery(undefined, {
@@ -47,8 +41,6 @@ export const useDashboardHook = () => {
     return {
         dataGeoLocation,
         isLoadingGeoLocation,
-        roles,
-        isFetchingRoles,
         dataByCategories,
         dataByDate,
         dataAggressionSummary
