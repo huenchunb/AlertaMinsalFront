@@ -16,9 +16,8 @@ import {
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 import Image from "next/image";
-import {useDashboardHook} from "@/components/hooks/get-roles";
+import  {useGetUserRoleHook} from "@/components/hooks/get-user-role";
 
-// This is sample data.
 const data = {
     user: {
         name: "Administrador",
@@ -146,10 +145,26 @@ const dataJefatura = {
     ],
 };
 
+const dataEmpleado = {
+    navMain: [
+        {
+            title: "Agresiones",
+            url: "/dashboard/agresiones",
+            icon: ClipboardList,
+            items: [
+                {
+                    title: "Ver listado",
+                    url: "/dashboard/agresiones",
+                },
+            ],
+        },
+    ],
+};
+
 export function SidenavAdmin({
                                  ...props
                              }: React.ComponentProps<typeof Sidebar>) {
-    const {roles, isFetchingRoles} = useDashboardHook();
+    const {roles, isFetchingRoles} = useGetUserRoleHook()
 
     return (
         <Sidebar collapsible="icon" {...props}>
@@ -168,6 +183,7 @@ export function SidenavAdmin({
             <SidebarContent>
                 {!isFetchingRoles && roles && roles.includes("Administrator") && <NavMain items={data.navMain}/>}
                 {!isFetchingRoles && roles && roles.includes("Jefatura") && <NavMain items={dataJefatura.navMain}/>}
+                {!isFetchingRoles && roles && roles.includes("Empleado") && <NavMain items={dataEmpleado.navMain}/>}
             </SidebarContent>
             <SidebarFooter>
                 <NavUser/>

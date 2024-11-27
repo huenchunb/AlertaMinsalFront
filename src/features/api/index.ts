@@ -10,9 +10,11 @@ import {
     CreateEstablishmentCommand,
     EmpleadoDto,
     EstablecimientoDto,
-    GetAggresionsSummaryResponseDto, GetAggressionsQuery,
+    GetAggresionsSummaryResponseDto,
+    GetAggressionsQuery,
     GetAggressionSummaryByDate,
-    GetDefaultsResponseDto, GetEmpleadoQuery,
+    GetDefaultsResponseDto,
+    GetEmpleadoQuery,
     LoginRequestBody,
     LoginResponseBody,
     PaginatedList,
@@ -21,8 +23,8 @@ import {
 import Cookies from "js-cookie";
 
 const baseQuery = fetchBaseQuery({
-    baseUrl: "https://alertaminsal.azurewebsites.net/api",
-    //baseUrl: "https://localhost:5001/api",
+    //baseUrl: "https://alertaminsal.azurewebsites.net/api",
+    baseUrl: "https://localhost:5001/api",
     prepareHeaders: (headers) => {
         const token = Cookies.get('accessToken');
         if (token) {
@@ -64,6 +66,9 @@ export const api = createApi({
                 `/Establecimientos?pageNumber=${pageNumber}&pageSize=${pageSize}`,
             providesTags: ["Establecimientos"],
         }),
+        getEstablecimientoById: builder.query<EstablecimientoDto, number>({
+            query: (id: number) => `/Establecimientos/${id}`
+        }),
         getEmpleados: builder.query<
             PaginatedList<EmpleadoDto>,
             GetEmpleadoQuery
@@ -95,8 +100,8 @@ export const api = createApi({
             PaginatedList<AggressionDto>,
             GetAggressionsQuery
         >({
-            query: ({pageNumber, pageSize, establecimientoId}) =>
-                `/Agresiones?pageNumber=${pageNumber}&pageSize=${pageSize}${establecimientoId ? `&establecimientoId=${establecimientoId}` : ``}`,
+            query: ({pageNumber, pageSize, establecimientoId, empleadoId}) =>
+                `/Agresiones?pageNumber=${pageNumber}&pageSize=${pageSize}${establecimientoId ? `&establecimientoId=${establecimientoId}` : ``}${empleadoId ? `&empleadoId=${empleadoId}` : ``}`,
             providesTags: ["Aggressions"]
         }),
         GetAggressionsSummary: builder.query<GetAggresionsSummaryResponseDto, void>(

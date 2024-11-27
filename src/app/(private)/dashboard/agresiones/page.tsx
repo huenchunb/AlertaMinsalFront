@@ -1,13 +1,7 @@
 "use client";
 
 import {Card, CardContent, CardDescription, CardHeader, CardTitle,} from "@/components/ui/card";
-import {
-    api,
-    useApproveAggressionMutation,
-    useGetAggressionsQuery,
-    useGetUserByEmailQuery,
-    useGetUserInfoQuery
-} from "@/features/api";
+import {api, useApproveAggressionMutation, useGetAggressionsQuery} from "@/features/api";
 import {Separator} from "@radix-ui/react-separator";
 import React, {useState} from "react";
 import {ChevronsUpDown, CircleCheckBig, CircleX, FileText, Users} from "lucide-react";
@@ -17,6 +11,9 @@ import {ApproveAggressionCommand, GetAggressionsQuery} from "@/features/api/type
 import {toast} from "@/hooks/use-toast";
 import {Alert} from "@/components/ui/alert";
 import {useAppDispatch, useAppSelector} from "@/store/hooks";
+import useGetUserInfo from "@/components/hooks/get-user-info";
+import useGetEmpleadoHook from "@/components/hooks/get-empleado";
+import useGetUserRoleHook from "@/components/hooks/get-user-role";
 
 const AgresionesPage = () => {
     const dispatch = useAppDispatch();
@@ -25,18 +22,13 @@ const AgresionesPage = () => {
 
     const {isAdministrator} = useAppSelector(state => state.auth)
 
-    const {data: userInfo} = useGetUserInfoQuery(undefined, {
-        refetchOnMountOrArgChange: true,
-        refetchOnFocus: true,
-        refetchOnReconnect: true
-    });
+    const {roles} = useGetUserRoleHook();
 
-    const {data: user, error: errorUser} = useGetUserByEmailQuery(userInfo?.email ?? "",
-        {
-            refetchOnMountOrArgChange: true,
-            refetchOnFocus: true,
-            refetchOnReconnect: true
-        })
+    const {userInfo} = useGetUserInfo();
+
+    const email = userInfo && userInfo.email;
+
+    const {user, errorUser} = useGetEmpleadoHook({email});
 
     const handleNextPage = () => {
         if (data && data.hasNextPage) {
@@ -55,8 +47,12 @@ const AgresionesPage = () => {
         pageNumber: pageNumber,
     }
 
-    if (!errorUser && user && user.establecimientoId) {
+    if (!errorUser && user && user.establecimientoId && roles && roles.includes("Jefatura")) {
         body.establecimientoId = user.establecimientoId;
+    }
+
+    if (!errorUser && user && user.id && roles && roles.includes("Empleado")) {
+        body.empleadoId = user.id;
     }
 
     const {data} = useGetAggressionsQuery(

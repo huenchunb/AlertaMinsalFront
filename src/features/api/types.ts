@@ -279,4 +279,5 @@ export interface GetAggressionsQuery {
     pageNumber: number;
     pageSize: number;
     establecimientoId?: number | null | undefined;
+    empleadoId?: number | null | undefined;
 }
