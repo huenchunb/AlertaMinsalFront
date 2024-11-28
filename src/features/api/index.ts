@@ -38,6 +38,7 @@ export const api = createApi({
     reducerPath: "api",
     baseQuery: baseQuery,
     tagTypes: ["Empleados", "Defaults", "Establecimientos", "Aggressions"],
+    keepUnusedDataFor: 10,
     endpoints: (builder) => ({
         login: builder.mutation<LoginResponseBody, LoginRequestBody>({
             query: (credentials) => ({
