@@ -9,6 +9,7 @@ import ChartEmployeDonut, {ChartDataEmployeeDonut} from "@/components/charts/cha
 import {Alert} from "@/components/ui/alert";
 import {MessageSquareWarning} from "lucide-react"
 import Image from "next/image";
+import {Spinner} from "@/components/ui/spinner";
 
 const DashboardEmpleado = () => {
     const {userInfo} = useGetUserInfo()
@@ -26,7 +27,7 @@ const DashboardEmpleado = () => {
         body.empleadoId = user.id
     }
 
-    const {data: aggressions} = useGetAggressionsQuery(body, {
+    const {data: aggressions, isFetching} = useGetAggressionsQuery(body, {
         refetchOnMountOrArgChange: true,
         refetchOnReconnect: true
     })
@@ -110,7 +111,8 @@ const DashboardEmpleado = () => {
                                 </div>
                             </div>
                             <div className="flex order-1 mb-2">
-                                <ChartEmployeDonut data={chartData}/>
+                                {!isFetching && chartData ? (<ChartEmployeDonut data={chartData}/>) :
+                                    <Spinner size={20}/>}
                             </div>
                         </CardContent>
                     </Card>

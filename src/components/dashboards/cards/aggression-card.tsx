@@ -11,7 +11,7 @@ interface AggressionCardProps {
     isAdministrator: boolean;
     isEmpleado: boolean;
     aggression: AggressionDto;
-    handleApproveAggression: (id: number) => Promise<void>;
+    handleApproveAggression: (id: number, estado:number) => Promise<void>;
     isLoading: boolean;
 }
 
@@ -37,15 +37,22 @@ const AggressionCard = ({
                         </p>
                     </div>
                 </div>
-                {aggression.estadoAgresion == "Ingresada" ? (
+                {aggression.estadoAgresion === "Ingresada" && (
                     <div className="flex w-full justify-center xl:justify-start items-center xl:w-1/4 gap-2 p-4">
                         <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
                         <p className="text-gray-400">Pendiente de aprobación</p>
                     </div>
-                ) : (
+                )}
+                {aggression.estadoAgresion === "Aprobada" && (
                     <div className="flex w-full justify-center xl:justify-start items-center xl:w-1/4 gap-2 p-4">
                         <div className="w-2 h-2 bg-green-400 rounded-full"></div>
                         <p className="text-gray-400">Aprobada</p>
+                    </div>
+                )}
+                {aggression.estadoAgresion === "Rechazada" && (
+                    <div className="flex w-full justify-center xl:justify-start items-center xl:w-1/4 gap-2 p-4">
+                        <div className="w-2 h-2 bg-primary rounded-full"></div>
+                        <p className="text-gray-400">Rechazada</p>
                     </div>
                 )}
                 <div className="flex flex-col items-center w-full xl:w-1/5">
@@ -70,14 +77,14 @@ const AggressionCard = ({
             {(isAdministrator || isEmpleado) && (
                 <div className="flex grow gap-2 items-center">
                     <Button
-                        onClick={() => handleApproveAggression(aggression.agresionId)}
+                        onClick={() => handleApproveAggression(aggression.agresionId, 2)}
                         disabled={aggression.estadoAgresion === "Rechazada" || aggression.estadoAgresion === "Aprobada"}
                     >
                         {isLoading ? <Spinner size={20}/> : "Aprobar"}
                     </Button>
                     <Button
                         variant="ghost"
-                        onClick={() => handleApproveAggression(aggression.agresionId)}
+                        onClick={() => handleApproveAggression(aggression.agresionId, 3)}
                         disabled={aggression.estadoAgresion === "Rechazada" || aggression.estadoAgresion === "Aprobada"}
                     >
                         {isLoading ? <Spinner size={20}/> : "Rechazar"}

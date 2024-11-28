@@ -10,6 +10,7 @@ import millify from "millify";
 import {Spinner} from "@/components/ui/spinner";
 import {useGetUserRoleHook} from "@/components/hooks/get-user-role";
 import DashboardEmpleado from "@/components/dashboards/empleado/dashboard-empleado";
+import DashboardJefatura from "@/components/dashboards/jefatura/dashboard-jefatura";
 
 const DashboardPage = () => {
     const {
@@ -101,12 +102,7 @@ const DashboardPage = () => {
                     </>
                 )}
                 {!isFetchingRoles && roles && roles.includes("Jefatura") && (
-                    <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-                        <div className="grid auto-rows-min gap-4 md:grid-cols-2">
-                            Pendiente dashboard jefatura
-                        </div>
-                        <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min z-0"></div>
-                    </div>
+                    <DashboardJefatura />
                 )}
                 {!isFetchingRoles && roles && roles.includes("Empleado") && (
                     <DashboardEmpleado />

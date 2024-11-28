@@ -68,10 +68,11 @@ const AgresionesPage = () => {
 
     const [approveAggression] = useApproveAggressionMutation();
 
-    const handleApproveAggression = async (id: number) => {
+    const handleApproveAggression = async (id: number, estado:number) => {
         setLoadingId(id);
         const approveAggressionCommand: ApproveAggressionCommand = {
-            id
+            id,
+            estado
         }
         await approveAggression(approveAggressionCommand)
             .unwrap()

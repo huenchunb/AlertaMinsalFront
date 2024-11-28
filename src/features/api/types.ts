@@ -93,6 +93,7 @@ export interface GetDefaultsResponseDto {
 
 export interface ApproveAggressionCommand {
     id: number;
+    estado: number;
 }
 
 export interface CreateAgresionCommand {
