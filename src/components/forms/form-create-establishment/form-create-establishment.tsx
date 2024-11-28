@@ -15,6 +15,7 @@ import {useAppDispatch} from "@/store/hooks";
 import {toast} from "@/hooks/use-toast";
 import {Alert} from "@/components/ui/alert";
 import {CircleCheckBig, CircleX} from "lucide-react";
+import {Spinner} from "@/components/ui/spinner";
 
 const formCreateEstablishmentSchema = z.object({
     code: z.preprocess(
@@ -72,7 +73,7 @@ const FormCreateEstablishment = () => {
         refetchOnFocus: true,
     });
 
-    const [createEstablecimiento] = useCreateEstablecimientoMutation();
+    const [createEstablecimiento, {isLoading}] = useCreateEstablecimientoMutation();
 
     const form = useForm<z.infer<typeof formCreateEstablishmentSchema>>({
         resolver: zodResolver(formCreateEstablishmentSchema),
@@ -126,7 +127,7 @@ const FormCreateEstablishment = () => {
         }
 
         await createEstablecimiento(command).unwrap()
-            .then(()=> {
+            .then(() => {
                 toast({
                     title: "Registro éxitoso",
                     description: (
@@ -135,7 +136,7 @@ const FormCreateEstablishment = () => {
                                 <p className="text-green-800 mr-2">
                                     Se ha creado el establecimiento con éxito.
                                 </p>{" "}
-                                <CircleCheckBig size={20} className="text-green-800" />
+                                <CircleCheckBig size={20} className="text-green-800"/>
                             </div>
                         </Alert>
                     ),
@@ -161,7 +162,7 @@ const FormCreateEstablishment = () => {
                 })
 
             })
-            .catch(()=> {
+            .catch(() => {
                 toast({
                     description: (
                         <Alert className="border border-red-600 bg-red-100">
@@ -170,13 +171,13 @@ const FormCreateEstablishment = () => {
                                     Ocurrio un error al agregar el establecimiento. Intente
                                     nuevamente.
                                 </p>{" "}
-                                <CircleX size={20} className="text-red-800" />
+                                <CircleX size={20} className="text-red-800"/>
                             </div>
                         </Alert>
                     ),
                 });
             })
-            .finally(()=> {
+            .finally(() => {
                 dispatch(api.util.invalidateTags(["Establecimientos"]))
             })
 
@@ -204,168 +205,102 @@ const FormCreateEstablishment = () => {
             {data && (
                 <Form {...form}>
                     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
-                        <FormField
-                            control={control}
-                            name="code"
-                            render={({field}) => (
-                                <FormItem className="w-full">
-                                    <FormLabel>Código</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            type="text"
-                                            placeholder="Ingresa el código del establecimiento"
-                                            {...field}
-                                            value={field.value || ""}
-                                            onChange={field.onChange}
-                                            className="w-full text-xs"/>
-                                    </FormControl>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={control}
-                            name="name"
-                            render={({field}) => (
-                                <FormItem className="w-full">
-                                    <FormLabel>Nombre</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            type="text"
-                                            placeholder="Ingresa el nombre completo del establecimiento"
-                                            {...field}
-                                            className="w-full text-xs"/>
-                                    </FormControl>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={control}
-                            name="address"
-                            render={({field}) => (
-                                <FormItem className="w-full">
-                                    <FormLabel>Dirección</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            type="text"
-                                            placeholder="Ingresa la dirección"
-                                            {...field}
-                                            className="w-full text-xs"/>
-                                    </FormControl>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={control}
-                            name="streetNumber"
-                            render={({field}) => (
-                                <FormItem className="w-full">
-                                    <FormLabel>Númeración</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            type="text"
-                                            placeholder="Ingresa el número"
-                                            {...field}
-                                            className="w-full text-xs"/>
-                                    </FormControl>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={control}
-                            name="comunaId"
-                            render={({field}) => (
-                                <FormItem className="w-full">
-                                    <FormLabel>Comuna</FormLabel>
-                                    <Select
-                                        onValueChange={(value) =>
-                                            field.onChange(Number(value))
-                                        }
-                                        defaultValue={
-                                            field.value ? field.value.toString() : ""
-                                        }
-                                    >
-                                        <FormControl>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Selecciona una comuna"/>
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            {data.comunas.map((comuna) => (
-                                                <SelectItem
-                                                    key={comuna.id}
-                                                    value={comuna.id.toString()}
-                                                >
-                                                    {comuna.name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={control}
-                            name="latitude"
-                            render={({field}) => (
-                                <FormItem className="w-full">
-                                    <FormLabel>Latitud</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            type="text"
-                                            placeholder="Ingresa las coordenadas de latitude"
-                                            {...field}
-                                            className="w-full text-xs"/>
-                                    </FormControl>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={control}
-                            name="longitude"
-                            render={({field}) => (
-                                <FormItem className="w-full">
-                                    <FormLabel>Longitud</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            type="text"
-                                            placeholder="Ingresa las coordenadas de longitud"
-                                            {...field}
-                                            className="w-full text-xs"/>
-                                    </FormControl>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={control}
-                            name="phoneNumber"
-                            render={({field}) => (
-                                <FormItem className="w-full">
-                                    <FormLabel>Teléfono</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            type="text"
-                                            placeholder="Ingresa el número de teléfono"
-                                            {...field}
-                                            className="w-full text-xs"/>
-                                    </FormControl>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}
-                        />
-                        {data.tipoEstablecimiento && data.tipoEstablecimiento.length != 0 && (
+                        <div className="flex flex-col xl:flex-row gap-4">
                             <FormField
                                 control={control}
-                                name="tipoEstablecimientoId"
+                                name="code"
                                 render={({field}) => (
                                     <FormItem className="w-full">
-                                        <FormLabel>Tipo de establecimiento</FormLabel>
+                                        <FormLabel>Código</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                type="text"
+                                                placeholder="Ingresa el código del establecimiento"
+                                                {...field}
+                                                value={field.value || ""}
+                                                onChange={field.onChange}
+                                                className="w-full text-xs"/>
+                                        </FormControl>
+                                        <FormMessage/>
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={control}
+                                name="name"
+                                render={({field}) => (
+                                    <FormItem className="w-full">
+                                        <FormLabel>Nombre</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                type="text"
+                                                placeholder="Ingresa el nombre completo del establecimiento"
+                                                {...field}
+                                                className="w-full text-xs"/>
+                                        </FormControl>
+                                        <FormMessage/>
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={control}
+                                name="phoneNumber"
+                                render={({field}) => (
+                                    <FormItem className="w-full">
+                                        <FormLabel>Teléfono</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                type="text"
+                                                placeholder="Ingresa el número de teléfono"
+                                                {...field}
+                                                className="w-full text-xs"/>
+                                        </FormControl>
+                                        <FormMessage/>
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+                        <div className="flex flex-col xl:flex-row gap-4">
+                            <FormField
+                                control={control}
+                                name="address"
+                                render={({field}) => (
+                                    <FormItem className="w-full">
+                                        <FormLabel>Dirección</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                type="text"
+                                                placeholder="Ingresa la dirección"
+                                                {...field}
+                                                className="w-full text-xs"/>
+                                        </FormControl>
+                                        <FormMessage/>
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={control}
+                                name="streetNumber"
+                                render={({field}) => (
+                                    <FormItem className="w-full">
+                                        <FormLabel>Númeración</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                type="text"
+                                                placeholder="Ingresa el número"
+                                                {...field}
+                                                className="w-full text-xs"/>
+                                        </FormControl>
+                                        <FormMessage/>
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={control}
+                                name="comunaId"
+                                render={({field}) => (
+                                    <FormItem className="w-full">
+                                        <FormLabel>Comuna</FormLabel>
                                         <Select
                                             onValueChange={(value) =>
                                                 field.onChange(Number(value))
@@ -376,16 +311,16 @@ const FormCreateEstablishment = () => {
                                         >
                                             <FormControl>
                                                 <SelectTrigger>
-                                                    <SelectValue placeholder="Selecciona un tipo de establecimiento"/>
+                                                    <SelectValue placeholder="Selecciona una comuna"/>
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                {data.tipoEstablecimiento.map((tipo) => (
+                                                {data.comunas.map((comuna) => (
                                                     <SelectItem
-                                                        key={tipo.id}
-                                                        value={tipo.id.toString()}
+                                                        key={comuna.id}
+                                                        value={comuna.id.toString()}
                                                     >
-                                                        {tipo.name}
+                                                        {comuna.name}
                                                     </SelectItem>
                                                 ))}
                                             </SelectContent>
@@ -394,78 +329,197 @@ const FormCreateEstablishment = () => {
                                     </FormItem>
                                 )}
                             />
-                        )}
-                        <FormField
-                            control={control}
-                            name="nivelEstablecimientoId"
-                            render={({field}) => (
-                                <FormItem className="w-full">
-                                    <FormLabel>Nivel</FormLabel>
-                                    <Select
-                                        onValueChange={(value) =>
-                                            field.onChange(Number(value))
-                                        }
-                                        defaultValue={
-                                            field.value ? field.value.toString() : ""
-                                        }
-                                    >
-                                        <FormControl>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Selecciona un nivel de establecimiento"/>
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            {data.nivelEstablecimiento.map((nivel) => (
-                                                <SelectItem
-                                                    key={nivel.id}
-                                                    value={nivel.id.toString()}
-                                                >
-                                                    {nivel.name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="urgency"
-                            render={({field}) => (
-                                <FormItem className="space-y-3">
-                                    <FormLabel>¿Tiene urgencia?</FormLabel>
-                                    <FormControl>
-                                        <RadioGroup
-                                            onValueChange={field.onChange}
-                                            value={String(field.value)}
-                                            className="flex gap-2"
-                                        >
-                                            <FormItem className="flex items-center space-x-3 space-y-0">
-                                                <FormControl>
-                                                    <RadioGroupItem value="true"/>
-                                                </FormControl>
-                                                <FormLabel className="font-normal">Sí</FormLabel>
-                                            </FormItem>
-                                            <FormItem className="flex items-center space-x-3 space-y-0">
-                                                <FormControl>
-                                                    <RadioGroupItem value="false"/>
-                                                </FormControl>
-                                                <FormLabel className="font-normal">No</FormLabel>
-                                            </FormItem>
-                                        </RadioGroup>
-                                    </FormControl>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}
-                        />
-                        {urgency === "true" && (
+                        </div>
+                        <div className="flex flex-col xl:flex-row gap-4">
                             <FormField
                                 control={control}
-                                name="tipoUrgenciaEstablecimientoId"
+                                name="latitude"
                                 render={({field}) => (
                                     <FormItem className="w-full">
-                                        <FormLabel>Tipo urgencia</FormLabel>
+                                        <FormLabel>Latitud</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                type="text"
+                                                placeholder="Ingresa las coordenadas de latitude"
+                                                {...field}
+                                                className="w-full text-xs"/>
+                                        </FormControl>
+                                        <FormMessage/>
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={control}
+                                name="longitude"
+                                render={({field}) => (
+                                    <FormItem className="w-full">
+                                        <FormLabel>Longitud</FormLabel>
+                                        <FormControl>
+                                            <Input
+                                                type="text"
+                                                placeholder="Ingresa las coordenadas de longitud"
+                                                {...field}
+                                                className="w-full text-xs"/>
+                                        </FormControl>
+                                        <FormMessage/>
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+                        <div className="flex flex-col xl:flex-row gap-4">
+                            {data.tipoEstablecimiento && data.tipoEstablecimiento.length != 0 && (
+                                <FormField
+                                    control={control}
+                                    name="tipoEstablecimientoId"
+                                    render={({field}) => (
+                                        <FormItem className="w-full">
+                                            <FormLabel>Tipo de establecimiento</FormLabel>
+                                            <Select
+                                                onValueChange={(value) =>
+                                                    field.onChange(Number(value))
+                                                }
+                                                defaultValue={
+                                                    field.value ? field.value.toString() : ""
+                                                }
+                                            >
+                                                <FormControl>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Selecciona un tipo de establecimiento"/>
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    {data.tipoEstablecimiento.map((tipo) => (
+                                                        <SelectItem
+                                                            key={tipo.id}
+                                                            value={tipo.id.toString()}
+                                                        >
+                                                            {tipo.name}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage/>
+                                        </FormItem>
+                                    )}
+                                />
+                            )}
+                            {data.nivelEstablecimiento && data.nivelEstablecimiento.length != 0 && (
+                                <FormField
+                                    control={control}
+                                    name="nivelEstablecimientoId"
+                                    render={({field}) => (
+                                        <FormItem className="w-full">
+                                            <FormLabel>Nivel</FormLabel>
+                                            <Select
+                                                onValueChange={(value) =>
+                                                    field.onChange(Number(value))
+                                                }
+                                                defaultValue={
+                                                    field.value ? field.value.toString() : ""
+                                                }
+                                            >
+                                                <FormControl>
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Selecciona un nivel de establecimiento"/>
+                                                    </SelectTrigger>
+                                                </FormControl>
+                                                <SelectContent>
+                                                    {data.nivelEstablecimiento.map((nivel) => (
+                                                        <SelectItem
+                                                            key={nivel.id}
+                                                            value={nivel.id.toString()}
+                                                        >
+                                                            {nivel.name}
+                                                        </SelectItem>
+                                                    ))}
+                                                </SelectContent>
+                                            </Select>
+                                            <FormMessage/>
+                                        </FormItem>
+                                    )}
+                                />
+                            )}
+                        </div>
+                        <div className="flex flex-col xl:flex-row gap-4 items-end">
+                           <div className="min-w-32 flex self-center">
+                               <FormField
+                                   control={form.control}
+                                   name="urgency"
+                                   render={({field}) => (
+                                       <FormItem className="space-y-3">
+                                           <FormLabel>¿Tiene urgencia?</FormLabel>
+                                           <FormControl>
+                                               <RadioGroup
+                                                   onValueChange={field.onChange}
+                                                   value={String(field.value)}
+                                                   className="flex gap-2"
+                                               >
+                                                   <FormItem className="flex items-center space-x-3 space-y-0">
+                                                       <FormControl>
+                                                           <RadioGroupItem value="true"/>
+                                                       </FormControl>
+                                                       <FormLabel className="font-normal">Sí</FormLabel>
+                                                   </FormItem>
+                                                   <FormItem className="flex items-center space-x-3 space-y-0">
+                                                       <FormControl>
+                                                           <RadioGroupItem value="false"/>
+                                                       </FormControl>
+                                                       <FormLabel className="font-normal">No</FormLabel>
+                                                   </FormItem>
+                                               </RadioGroup>
+                                           </FormControl>
+                                           <FormMessage/>
+                                       </FormItem>
+                                   )}
+                               />
+                           </div>
+                            <div className="flex grow">
+                                {urgency === "true" && (
+                                    <FormField
+                                        control={control}
+                                        name="tipoUrgenciaEstablecimientoId"
+                                        render={({field}) => (
+                                            <FormItem className="w-full">
+                                                <FormLabel>Tipo urgencia</FormLabel>
+                                                <Select
+                                                    onValueChange={(value) =>
+                                                        field.onChange(Number(value))
+                                                    }
+                                                    defaultValue={
+                                                        field.value ? field.value.toString() : ""
+                                                    }
+                                                    disabled={!(urgency === "true")}
+                                                >
+                                                    <FormControl>
+                                                        <SelectTrigger>
+                                                            <SelectValue placeholder="Selecciona un tipo de urgencia"/>
+                                                        </SelectTrigger>
+                                                    </FormControl>
+                                                    <SelectContent>
+                                                        {filteredTipoUrgencia.map((urgencia) => (
+                                                            <SelectItem
+                                                                key={urgencia.id}
+                                                                value={urgencia.id.toString()}
+                                                            >
+                                                                {urgencia.name}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                                <FormMessage/>
+                                            </FormItem>
+                                        )}
+                                    />
+                                )}
+                            </div>
+                        </div>
+                        <div className="flex flex-col xl:flex-row gap-4 mb-4">
+                            <FormField
+                                control={control}
+                                name="complejidadEstablecimientoId"
+                                render={({field}) => (
+                                    <FormItem className="w-full">
+                                        <FormLabel>Complejidad</FormLabel>
                                         <Select
                                             onValueChange={(value) =>
                                                 field.onChange(Number(value))
@@ -473,20 +527,19 @@ const FormCreateEstablishment = () => {
                                             defaultValue={
                                                 field.value ? field.value.toString() : ""
                                             }
-                                            disabled={!(urgency === "true")}
                                         >
                                             <FormControl>
                                                 <SelectTrigger>
-                                                    <SelectValue placeholder="Selecciona un tipo de urgencia"/>
+                                                    <SelectValue placeholder="Selecciona una complejidad"/>
                                                 </SelectTrigger>
                                             </FormControl>
                                             <SelectContent>
-                                                {filteredTipoUrgencia.map((urgencia) => (
+                                                {data.complejidadesEstablecimiento.map((complejidad) => (
                                                     <SelectItem
-                                                        key={urgencia.id}
-                                                        value={urgencia.id.toString()}
+                                                        key={complejidad.id}
+                                                        value={complejidad.id.toString()}
                                                     >
-                                                        {urgencia.name}
+                                                        {complejidad.name}
                                                     </SelectItem>
                                                 ))}
                                             </SelectContent>
@@ -495,76 +548,42 @@ const FormCreateEstablishment = () => {
                                     </FormItem>
                                 )}
                             />
-                        )}
-                        <FormField
-                            control={control}
-                            name="complejidadEstablecimientoId"
-                            render={({field}) => (
-                                <FormItem className="w-full">
-                                    <FormLabel>Complejidad</FormLabel>
-                                    <Select
-                                        onValueChange={(value) =>
-                                            field.onChange(Number(value))
-                                        }
-                                        defaultValue={
-                                            field.value ? field.value.toString() : ""
-                                        }
-                                    >
-                                        <FormControl>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Selecciona una complejidad"/>
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            {data.complejidadesEstablecimiento.map((complejidad) => (
-                                                <SelectItem
-                                                    key={complejidad.id}
-                                                    value={complejidad.id.toString()}
-                                                >
-                                                    {complejidad.name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={control}
-                            name="tipoAtencionEstablecimientoId"
-                            render={({field}) => (
-                                <FormItem className="w-full">
-                                    <FormLabel>Tipo atención</FormLabel>
-                                    <Select
-                                        onValueChange={(value) =>
-                                            field.onChange(Number(value))
-                                        }
-                                        defaultValue={
-                                            field.value ? field.value.toString() : ""
-                                        }
-                                    >
-                                        <FormControl>
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Selecciona un tipo de atención"/>
-                                            </SelectTrigger>
-                                        </FormControl>
-                                        <SelectContent>
-                                            {data.tipoAtencionEstablecimiento.map((tipoAtencion) => (
-                                                <SelectItem
-                                                    key={tipoAtencion.id}
-                                                    value={tipoAtencion.id.toString()}
-                                                >
-                                                    {tipoAtencion.name}
-                                                </SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
-                                    <FormMessage/>
-                                </FormItem>
-                            )}
-                        />
-                        <Button type="submit">Crear</Button>
+                            <FormField
+                                control={control}
+                                name="tipoAtencionEstablecimientoId"
+                                render={({field}) => (
+                                    <FormItem className="w-full">
+                                        <FormLabel>Tipo atención</FormLabel>
+                                        <Select
+                                            onValueChange={(value) =>
+                                                field.onChange(Number(value))
+                                            }
+                                            defaultValue={
+                                                field.value ? field.value.toString() : ""
+                                            }
+                                        >
+                                            <FormControl>
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Selecciona un tipo de atención"/>
+                                                </SelectTrigger>
+                                            </FormControl>
+                                            <SelectContent>
+                                                {data.tipoAtencionEstablecimiento.map((tipoAtencion) => (
+                                                    <SelectItem
+                                                        key={tipoAtencion.id}
+                                                        value={tipoAtencion.id.toString()}
+                                                    >
+                                                        {tipoAtencion.name}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                        <FormMessage/>
+                                    </FormItem>
+                                )}
+                            />
+                        </div>
+                        <Button type="submit" disabled={isLoading}>{isLoading ? <Spinner size={20}/> : "Crear"}</Button>
                     </form>
                 </Form>
             )}
