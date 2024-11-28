@@ -23,8 +23,8 @@ import {
 import Cookies from "js-cookie";
 
 const baseQuery = fetchBaseQuery({
-    baseUrl: "https://alertaminsal.azurewebsites.net/api",
-    //baseUrl: "https://localhost:5001/api",
+    //baseUrl: "https://alertaminsal.azurewebsites.net/api",
+    baseUrl: "https://localhost:5001/api",
     prepareHeaders: (headers) => {
         const token = Cookies.get('accessToken');
         if (token) {
@@ -38,6 +38,7 @@ export const api = createApi({
     reducerPath: "api",
     baseQuery: baseQuery,
     tagTypes: ["Empleados", "Defaults", "Establecimientos", "Aggressions"],
+    keepUnusedDataFor: 10,
     endpoints: (builder) => ({
         login: builder.mutation<LoginResponseBody, LoginRequestBody>({
             query: (credentials) => ({
