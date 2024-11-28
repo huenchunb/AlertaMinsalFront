@@ -93,6 +93,7 @@ export interface GetDefaultsResponseDto {
 
 export interface ApproveAggressionCommand {
     id: number;
+    estado: number;
 }
 
 export interface CreateAgresionCommand {
@@ -242,6 +243,7 @@ export interface EstablishmentSummaryDto {
 export interface GetAggresionsSummaryResponseDto {
     attacksReported: number;
     approvedAttacks: number;
+    declinedAttacks: number;
     physicalEstablishment: EstablishmentSummaryDto;
     verbalEstablishment: EstablishmentSummaryDto;
 }
