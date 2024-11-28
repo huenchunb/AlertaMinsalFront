@@ -32,6 +32,7 @@ import {Checkbox} from "@/components/ui/checkbox";
 import {Input} from "@/components/ui/input";
 import {InputRut} from "@/components/ui/input-rut";
 import {toast} from "@/hooks/use-toast";
+import {Spinner} from "@/components/ui/spinner";
 
 export const formCreateAgresionSchema = z.object({
     fechaAgresion: z.date({
@@ -115,7 +116,7 @@ const FormCreateAgresion = () => {
         refetchOnReconnect: true
     })
 
-    const [createAgresion] = useCreateAgresionMutation();
+    const [createAgresion, {isLoading}] = useCreateAgresionMutation();
 
     const [empleados, setEmpleados] = React.useState<EmpleadoDefaultDto[]>([]);
     const [categorias, setCategorias] = React.useState<LookupDto[]>([]);
@@ -958,7 +959,11 @@ const FormCreateAgresion = () => {
                                 </CardContent>
                             </Card>
                         </div>
-                        <Button type="submit">Crear registro de agresión</Button>
+                        <Button type="submit"
+                        disabled={isLoading}
+                        >
+                            {isLoading ? <Spinner size={20}/> : "Crear registro de agresión"}
+                        </Button>
                     </form>
                 </Form>
             )}
