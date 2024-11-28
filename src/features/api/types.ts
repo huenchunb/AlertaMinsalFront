@@ -243,6 +243,7 @@ export interface EstablishmentSummaryDto {
 export interface GetAggresionsSummaryResponseDto {
     attacksReported: number;
     approvedAttacks: number;
+    declinedAttacks: number;
     physicalEstablishment: EstablishmentSummaryDto;
     verbalEstablishment: EstablishmentSummaryDto;
 }
